@@ -3,15 +3,32 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ShieldCheck, ShieldAlert, Cpu, Heart } from "lucide-react";
 
+import { createClient } from "@/lib/supabase/server";
+
 export const dynamic = "force-dynamic";
 
-export default function VehicleHealthPage() {
-  const healthRecords = [
-    { id: "h1", vehicle: "MH-12-EQ-8834", score: 62, battery: "Critical (Voltage sag)", motor: "Optimal", controller: "Warning (High heat)", lastChecked: "2m ago" },
-    { id: "h2", vehicle: "KA-51-AB-1209", score: 92, battery: "Good", motor: "Optimal", controller: "Optimal", lastChecked: "10m ago" },
-    { id: "h3", vehicle: "MH-01-XX-9090", score: 54, battery: "Degraded (SOH < 60%)", motor: "Warning (High load temp)", controller: "Optimal", lastChecked: "1m ago" },
-    { id: "h4", vehicle: "DL-03-CC-4451", score: 98, battery: "Optimal", motor: "Optimal", controller: "Optimal", lastChecked: "1h ago" }
-  ];
+export default async function VehicleHealthPage() {
+  const db = await createClient();
+  const { data: rawVehicles } = await db.from("vehicles").select("*, customers(full_name)");
+  const vehicles = rawVehicles || [];
+
+  const healthRecords = vehicles.map((v: any) => {
+    const batteryHealth = parseInt(v.battery_health) || 90;
+    return {
+      id: v.id,
+      vehicle: v.registration_number || v.model || "Unknown",
+      fleet: v.customers?.full_name || "Unassigned",
+      score: batteryHealth,
+      battery: batteryHealth > 80 ? "Optimal" : batteryHealth > 60 ? "Good" : "Degraded",
+      motor: v.amc_status === "active" ? "Optimal" : "Warning (No AMC)",
+      controller: "Optimal",
+      lastChecked: v.updated_at ? new Date(v.updated_at).toLocaleDateString() : "N/A"
+    };
+  });
+
+  const totalScore = healthRecords.reduce((sum: number, r: any) => sum + r.score, 0);
+  const avgScore = healthRecords.length ? Math.round(totalScore / healthRecords.length) : 0;
+  const criticalCount = healthRecords.filter((r: any) => r.score <= 60).length;
 
   return (
     <div className="space-y-6 pb-12">
@@ -28,7 +45,7 @@ export default function VehicleHealthPage() {
             <Heart className="h-4 w-4 text-rose-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-950">96.4%</div>
+            <div className="text-2xl font-bold text-slate-950">{avgScore}%</div>
           </CardContent>
         </Card>
 
@@ -38,7 +55,7 @@ export default function VehicleHealthPage() {
             <Cpu className="h-4 w-4 text-indigo-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-950">Optimal</div>
+            <div className="text-2xl font-bold text-slate-950">{avgScore > 80 ? "Optimal" : "Needs Review"}</div>
           </CardContent>
         </Card>
 
@@ -48,7 +65,7 @@ export default function VehicleHealthPage() {
             <ShieldAlert className="h-4 w-4 text-red-500 animate-pulse" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-950">2 Critical</div>
+            <div className="text-2xl font-bold text-slate-950">{criticalCount} Critical</div>
           </CardContent>
         </Card>
       </div>
@@ -64,6 +81,7 @@ export default function VehicleHealthPage() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="text-slate-500 font-semibold text-xs">Vehicle Plate</TableHead>
+                <TableHead className="text-slate-500 font-semibold text-xs">Fleet / Owner</TableHead>
                 <TableHead className="text-slate-500 font-semibold text-xs">Overall Health Score</TableHead>
                 <TableHead className="text-slate-500 font-semibold text-xs">Battery Pack</TableHead>
                 <TableHead className="text-slate-500 font-semibold text-xs">Electric Motor</TableHead>
@@ -72,9 +90,10 @@ export default function VehicleHealthPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {healthRecords.map((r) => (
+              {healthRecords.map((r: any) => (
                 <TableRow key={r.id} className="hover:bg-slate-50/50">
                   <TableCell className="font-bold text-xs text-slate-800">{r.vehicle}</TableCell>
+                  <TableCell className="text-xs text-slate-600 font-medium">{r.fleet}</TableCell>
                   <TableCell className="text-xs text-slate-700">
                     <div className="flex items-center gap-2">
                       <span className={`font-bold ${r.score > 80 ? "text-green-600" : r.score > 60 ? "text-orange-600" : "text-red-600"}`}>

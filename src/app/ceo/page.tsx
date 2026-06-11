@@ -203,7 +203,10 @@ export default function AICeoDashboard() {
       const res = await fetch("/api/ceo/copilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: userText })
+        body: JSON.stringify({
+          question: userText,
+          history: chatHistory.map(m => ({ role: m.role, text: m.text }))
+        })
       });
       const json = await res.json();
       if (json.success) {

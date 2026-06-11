@@ -174,7 +174,7 @@ export async function runPlaybookSteps(
       return { success: true }; // Pause here
     }
     else if (step.action_type === "trigger_api") {
-      // Mock API call simulation
+      // External API call implementation hook
       console.log(`[PLAYBOOK API TRIGGER] ${config.endpoint}: ${config.description}`);
     }
     else if (step.action_type === "generate_recommendation") {

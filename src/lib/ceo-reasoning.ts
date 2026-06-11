@@ -32,6 +32,10 @@ import { evaluateControlTower, ControlTowerOutput } from "@/lib/ceo-control-towe
 import { getGraphSummary } from "@/lib/enterprise-knowledge-graph";
 import { getHorizonSummary } from "@/lib/strategic-horizon";
 
+// True AI Imports
+import { generateWithFallback } from "@/lib/ai/ai-client";
+import { z } from "zod";
+
 export interface RecommendedAction {
   title: string;
   expected_outcome: string;
@@ -78,6 +82,24 @@ export interface ReasoningResult {
     "365d": any[];
   };
 }
+
+const AiReasoningSchema = z.object({
+  executive_brief: z.string(),
+  strategic_analysis: z.string(),
+  recommended_actions: z.array(z.object({
+    title: z.string(),
+    expected_outcome: z.string(),
+    confidence_score: z.number(),
+    priority_score: z.number(),
+    revenue_impact: z.number(),
+    operational_impact: z.string(),
+    why: z.string(),
+    difficulty: z.enum(["easy", "medium", "hard"])
+  })),
+  risk_analysis: z.string(),
+  growth_opportunities: z.array(z.string()),
+  confidence_score: z.number()
+});
 
 /**
  * Runs a company-wide analytical audit to formulate unified executive recommendations and execution insights.
@@ -174,181 +196,250 @@ export async function runCEOReasoning(): Promise<ReasoningResult> {
   const lastActual = forecasts.filter(f => f.type === "actual").slice(-1)[0]?.revenue || 12000;
   const nextForecast = forecasts.filter(f => f.type === "forecast")[0]?.revenue || 15000;
 
-  // 2. Draft Executive Brief
-  const briefText = `Enterprise health unified score: ${entHealth.unified_score}%. Company overall health displays warning metrics due to a target deficit of ₹${(15000 - lastActual).toFixed(0)} in transactions and ${activeBottleneckCount} active operational bottlenecks. Expected monthly revenue is forecasted to climb to ₹${nextForecast.toLocaleString("en-IN")} following slot redistribution SOPs.`;
-
-  // 3. Draft Strategic Analysis
-  const analysisText = `Analysis of checkout payments reveals ₹${totalLeakage.toLocaleString("en-IN")} in active revenue leakage. In parallel, technician dispatches show constraints in Pune East Hub. Resolving gateway webhook failures represents the highest ROI path, followed by technician shift balancing. Overdue tasks rate stands at ${execScore.overdue_rate}%.`;
-
-  // 4. Formulate Recommended Actions (with V2 Alternatives ranking)
-  const rawActions: RecommendedAction[] = [];
-
-  // Recommendation A: Webhook fixes
-  const gatewayRevVal = totalLeakage || 28000;
-  const gatewayPriority = calculatePriorityScore({
-    revenueImpact: gatewayRevVal,
-    operationalImpactScore: 8,
-    urgencyScore: 9,
-    confidenceScore: 92,
-    difficulty: "easy"
-  });
-  rawActions.push({
-    title: "Upgrade Gateway Webhook Callbacks & Dispatch Payment Retries",
-    expected_outcome: `Recover ₹${gatewayRevVal.toFixed(0)} in unbilled completed services and payment failures.`,
-    confidence_score: 92,
-    priority_score: gatewayPriority,
-    revenue_impact: gatewayRevVal,
-    operational_impact: "None - software correction to callback hooks.",
-    why: "Checkout abandonment rates are currently 20% below target due to gateway sync lags.",
-    difficulty: "easy"
-  });
-
-  // Recommendation B: AMC Upsell
-  const amcRevenueVal = 25000;
-  const amcPriority = calculatePriorityScore({
-    revenueImpact: amcRevenueVal,
-    operationalImpactScore: 6,
-    urgencyScore: 7,
-    confidenceScore: 85,
-    difficulty: "medium"
-  });
-  rawActions.push({
-    title: "Launch WhatsApp AMC Campaign for Out-of-Warranty Fleets",
-    expected_outcome: "Acquire 20+ AMC conversions, increasing recurring revenue by ₹50,000.",
-    confidence_score: 85,
-    priority_score: amcPriority,
-    revenue_impact: amcRevenueVal,
-    operational_impact: "Low - utilizes automated communication templates.",
-    why: "Monsoon checkup demand is peaking, and fleet customers have low AMC protection rates.",
-    difficulty: "medium"
-  });
-
-  // Recommendation C: Shift re-allocation
-  const shiftRevVal = 3600;
-  const shiftPriority = calculatePriorityScore({
-    revenueImpact: shiftRevVal,
-    operationalImpactScore: 9,
-    urgencyScore: 8,
-    confidenceScore: 88,
-    difficulty: "hard"
-  });
-  rawActions.push({
-    title: "Re-allocate Pune East Technician Shifts to West Hub Partners",
-    expected_outcome: "Reduce critical technician assignment bottlenecks and recover ₹3,600 in delayed bookings.",
-    confidence_score: 88,
-    priority_score: shiftPriority,
-    revenue_impact: shiftRevVal,
-    operational_impact: "High - requires dispatcher scheduling adjustments.",
-    why: "Pune East Hub currently has 3 technicians overloaded with concurrent dispatches.",
-    difficulty: "hard"
-  });
-
-  // 5. Governance Filters: Verify Autonomy Permission & Validate Against Constitution
-  const validatedActions: RecommendedAction[] = [];
-  for (const act of rawActions) {
-    const cost = 0; // Free of cost execution under full AI autonomy
-    const validation = await validateAgainstConstitution({
-      actionName: act.title,
-      cost,
-      projectedRevenueImpact: act.revenue_impact
-    });
-
-    const permission = await verifyAutonomyPermission("recommend_actions", 1);
-
-    let govStatus = "Approved";
-    if (!validation.passed) {
-      govStatus = `Blocked by Constitution: ${validation.violations.join(", ")}`;
-    } else if (!permission.allowed) {
-      govStatus = `Blocked by Autonomy Framework: Level insufficient.`;
-    }
-
-    validatedActions.push({
-      ...act,
-      governance_status: govStatus
-    });
-  }
-
-  // Sort actions by priority score
-  validatedActions.sort((a, b) => b.priority_score - a.priority_score);
-
-  // 6. Risk Analysis
-  const highChurnCount = profileList.filter((p: any) => p.churn_risk_score > 50).length;
-  let riskText = `${highChurnCount} customers present high churn risk scores due to recurring complaint delays and negative rating feedback. `;
-  if (stalledInitiatives.length > 0) {
-    riskText += `Flagged ${stalledInitiatives.length} stalled commitments falling behind target timelines.`;
-  }
-
-  // 7. Growth Opportunities
-  const growthOpts = [
-    "Bundle AMC subscription packages into routine monsoon inspection checkups.",
-    "Onboard Pune West garage partners to absorb East Hub slot overflows.",
-    "Launch loyalty campaigns offering wallet credits for positive ratings."
-  ];
-
-  // 8. Record reasoning outputs in DB
+  // --- TRUE AI ATTEMPT ---
   try {
-    const { data: session, error: sessionErr } = await db
-      .from("ceo_reasoning_sessions")
-      .insert({ 
-        topic: "Automated Executive Briefing reasoning session",
-        trigger_event: "Reasoning Engine Execution"
-      })
-      .select("id")
-      .maybeSingle();
+    const systemPrompt = `You are the core AI reasoning engine for the InnoVibe AIOS CEO Dashboard. Analyze the provided company telemetry and return a structured JSON object containing an executive brief, strategic analysis, specific recommended actions, risk analysis, and growth opportunities.`;
+    const userPrompt = `Live Telemetry:
+- Enterprise Health: ${JSON.stringify(entHealth)}
+- Active Bottleneck Count: ${activeBottleneckCount}
+- Revenue Leakages: ₹${totalLeakage}
+- Last Actual Revenue: ₹${lastActual}
+- Forecasted Revenue: ₹${nextForecast}
+- Execution Overdue Rate: ${execScore.overdue_rate}%
+- Stalled Initiatives: ${stalledInitiatives.length}
+- Customer Churn Risks: ${profileList.filter((p: any) => p.churn_risk_score > 50).length}
 
-    if (sessionErr) {
-      console.error("Failed to insert ceo_reasoning_session:", sessionErr);
-    }
+Please generate the required executive reasoning outputs.`;
 
-    if (!sessionErr && session) {
-      const { error: outputErr } = await db.from("ceo_reasoning_outputs").insert({
-        session_id: session.id,
-        executive_brief: briefText,
-        strategic_analysis: analysisText,
-        recommended_actions: validatedActions,
-        risk_analysis: riskText,
-        growth_opportunities: growthOpts,
-        confidence_score: 90.50
-      });
-      if (outputErr) {
-        console.error("Failed to insert ceo_reasoning_outputs:", outputErr);
-      }
-    }
-  } catch (dbErr: any) {
-    console.error("Failed to save reasoning output session:", dbErr.message);
-  }
-
-  return {
-    executive_brief: briefText,
-    strategic_analysis: analysisText,
-    recommended_actions: validatedActions,
-    risk_analysis: riskText,
-    growth_opportunities: growthOpts,
-    confidence_score: 90.50,
-    trust_metrics: trustMetrics,
-    goal_probabilities: goalProbs,
-    active_escalations: escalations,
-    capital_recommendations: capitalAllocations,
+    const aiOutputs = await generateWithFallback(systemPrompt, userPrompt, AiReasoningSchema);
     
-    // Phase 6 additions
-    enterprise_health: entHealth,
-    execution_health: {
-      ...execScore,
-      stalled_count: stalledInitiatives.length
-    },
-    department_alignment: deptCoordination,
-    goal_dependencies: goalDependencies,
-    followup_actions: followups,
-    resource_orchestration: resourceOrchestration,
+    // 5. Governance Filters (On AI Actions)
+    const validatedActions: RecommendedAction[] = [];
+    for (const act of aiOutputs.recommended_actions) {
+      const validation = await validateAgainstConstitution({
+        actionName: act.title,
+        cost: 0,
+        projectedRevenueImpact: act.revenue_impact
+      });
 
-    // Phase 6.1 additions
-    ceo_priorities: priorities,
-    organizational_capacity: capacities,
-    portfolio_rankings: portRankings,
+      const permission = await verifyAutonomyPermission("recommend_actions", 1);
+      let govStatus = "Approved";
+      if (!validation.passed) {
+        govStatus = `Blocked by Constitution: ${validation.violations.join(", ")}`;
+      } else if (!permission.allowed) {
+        govStatus = `Blocked by Autonomy Framework: Level insufficient.`;
+      }
 
-    // Phase 6.2 EOS Completion Layer
-    control_tower: controlTower ?? undefined,
-    knowledge_graph_summary: graphSummary,
-    strategic_horizons: horizons
-  };
+      validatedActions.push({ ...act, governance_status: govStatus });
+    }
+
+    // Return the AI generated result blended with standard telemetry
+    return {
+      executive_brief: aiOutputs.executive_brief,
+      strategic_analysis: aiOutputs.strategic_analysis,
+      recommended_actions: validatedActions,
+      risk_analysis: aiOutputs.risk_analysis,
+      growth_opportunities: aiOutputs.growth_opportunities,
+      confidence_score: aiOutputs.confidence_score,
+      trust_metrics: trustMetrics,
+      goal_probabilities: goalProbs,
+      active_escalations: escalations,
+      capital_recommendations: capitalAllocations,
+      enterprise_health: entHealth,
+      execution_health: { ...execScore, stalled_count: stalledInitiatives.length },
+      department_alignment: deptCoordination,
+      goal_dependencies: goalDependencies,
+      followup_actions: followups,
+      resource_orchestration: resourceOrchestration,
+      ceo_priorities: priorities,
+      organizational_capacity: capacities,
+      portfolio_rankings: portRankings,
+      control_tower: controlTower ?? undefined,
+      knowledge_graph_summary: graphSummary,
+      strategic_horizons: horizons
+    };
+
+  } catch (aiError) {
+    console.warn("AI Generation Failed. Falling back to Heuristic Engine:", aiError);
+
+    // --- ULTIMATE FALLBACK: ORIGINAL HEURISTIC LOGIC ---
+    
+    // 2. Draft Executive Brief
+    const briefText = `Enterprise health unified score: ${entHealth.unified_score}%. Company overall health displays warning metrics due to a target deficit of ₹${(15000 - lastActual).toFixed(0)} in transactions and ${activeBottleneckCount} active operational bottlenecks. Expected monthly revenue is forecasted to climb to ₹${nextForecast.toLocaleString("en-IN")} following slot redistribution SOPs.`;
+
+    // 3. Draft Strategic Analysis
+    const analysisText = `Analysis of checkout payments reveals ₹${totalLeakage.toLocaleString("en-IN")} in active revenue leakage. In parallel, technician dispatches show constraints in Pune East Hub. Resolving gateway webhook failures represents the highest ROI path, followed by technician shift balancing. Overdue tasks rate stands at ${execScore.overdue_rate}%.`;
+
+    // 4. Formulate Recommended Actions (with V2 Alternatives ranking)
+    const rawActions: RecommendedAction[] = [];
+
+    // Recommendation A: Webhook fixes
+    const gatewayRevVal = totalLeakage || 28000;
+    const gatewayPriority = calculatePriorityScore({
+      revenueImpact: gatewayRevVal,
+      operationalImpactScore: 8,
+      urgencyScore: 9,
+      confidenceScore: 92,
+      difficulty: "easy"
+    });
+    rawActions.push({
+      title: "Upgrade Gateway Webhook Callbacks & Dispatch Payment Retries",
+      expected_outcome: `Recover ₹${gatewayRevVal.toFixed(0)} in unbilled completed services and payment failures.`,
+      confidence_score: 92,
+      priority_score: gatewayPriority,
+      revenue_impact: gatewayRevVal,
+      operational_impact: "None - software correction to callback hooks.",
+      why: "Checkout abandonment rates are currently 20% below target due to gateway sync lags.",
+      difficulty: "easy"
+    });
+
+    // Recommendation B: AMC Upsell
+    const amcRevenueVal = 25000;
+    const amcPriority = calculatePriorityScore({
+      revenueImpact: amcRevenueVal,
+      operationalImpactScore: 6,
+      urgencyScore: 7,
+      confidenceScore: 85,
+      difficulty: "medium"
+    });
+    rawActions.push({
+      title: "Launch WhatsApp AMC Campaign for Out-of-Warranty Fleets",
+      expected_outcome: "Acquire 20+ AMC conversions, increasing recurring revenue by ₹50,000.",
+      confidence_score: 85,
+      priority_score: amcPriority,
+      revenue_impact: amcRevenueVal,
+      operational_impact: "Low - utilizes automated communication templates.",
+      why: "Monsoon checkup demand is peaking, and fleet customers have low AMC protection rates.",
+      difficulty: "medium"
+    });
+
+    // Recommendation C: Shift re-allocation
+    const shiftRevVal = 3600;
+    const shiftPriority = calculatePriorityScore({
+      revenueImpact: shiftRevVal,
+      operationalImpactScore: 9,
+      urgencyScore: 8,
+      confidenceScore: 88,
+      difficulty: "hard"
+    });
+    rawActions.push({
+      title: "Re-allocate Pune East Technician Shifts to West Hub Partners",
+      expected_outcome: "Reduce critical technician assignment bottlenecks and recover ₹3,600 in delayed bookings.",
+      confidence_score: 88,
+      priority_score: shiftPriority,
+      revenue_impact: shiftRevVal,
+      operational_impact: "High - requires dispatcher scheduling adjustments.",
+      why: "Pune East Hub currently has 3 technicians overloaded with concurrent dispatches.",
+      difficulty: "hard"
+    });
+
+    // 5. Governance Filters: Verify Autonomy Permission & Validate Against Constitution
+    const validatedActions: RecommendedAction[] = [];
+    for (const act of rawActions) {
+      const cost = 0; // Free of cost execution under full AI autonomy
+      const validation = await validateAgainstConstitution({
+        actionName: act.title,
+        cost,
+        projectedRevenueImpact: act.revenue_impact
+      });
+
+      const permission = await verifyAutonomyPermission("recommend_actions", 1);
+
+      let govStatus = "Approved";
+      if (!validation.passed) {
+        govStatus = `Blocked by Constitution: ${validation.violations.join(", ")}`;
+      } else if (!permission.allowed) {
+        govStatus = `Blocked by Autonomy Framework: Level insufficient.`;
+      }
+
+      validatedActions.push({
+        ...act,
+        governance_status: govStatus
+      });
+    }
+
+    // Sort actions by priority score
+    validatedActions.sort((a, b) => b.priority_score - a.priority_score);
+
+    // 6. Risk Analysis
+    const highChurnCount = profileList.filter((p: any) => p.churn_risk_score > 50).length;
+    let riskText = `${highChurnCount} customers present high churn risk scores due to recurring complaint delays and negative rating feedback. `;
+    if (stalledInitiatives.length > 0) {
+      riskText += `Flagged ${stalledInitiatives.length} stalled commitments falling behind target timelines.`;
+    }
+
+    // 7. Growth Opportunities
+    const growthOpts = [
+      "Bundle AMC subscription packages into routine monsoon inspection checkups.",
+      "Onboard Pune West garage partners to absorb East Hub slot overflows.",
+      "Launch loyalty campaigns offering wallet credits for positive ratings."
+    ];
+
+    // 8. Record reasoning outputs in DB
+    try {
+      const { data: session, error: sessionErr } = await db
+        .from("ceo_reasoning_sessions")
+        .insert({ 
+          topic: "Automated Executive Briefing reasoning session",
+          trigger_event: "Reasoning Engine Execution"
+        })
+        .select("id")
+        .maybeSingle();
+
+      if (sessionErr) {
+        console.error("Failed to insert ceo_reasoning_session:", sessionErr);
+      }
+
+      if (!sessionErr && session) {
+        const { error: outputErr } = await db.from("ceo_reasoning_outputs").insert({
+          session_id: session.id,
+          executive_brief: briefText,
+          strategic_analysis: analysisText,
+          recommended_actions: validatedActions,
+          risk_analysis: riskText,
+          growth_opportunities: growthOpts,
+          confidence_score: 90.50
+        });
+        if (outputErr) {
+          console.error("Failed to insert ceo_reasoning_outputs:", outputErr);
+        }
+      }
+    } catch (dbErr: any) {
+      console.error("Failed to save reasoning output session:", dbErr.message);
+    }
+
+    return {
+      executive_brief: briefText,
+      strategic_analysis: analysisText,
+      recommended_actions: validatedActions,
+      risk_analysis: riskText,
+      growth_opportunities: growthOpts,
+      confidence_score: 90.50,
+      trust_metrics: trustMetrics,
+      goal_probabilities: goalProbs,
+      active_escalations: escalations,
+      capital_recommendations: capitalAllocations,
+      
+      // Phase 6 additions
+      enterprise_health: entHealth,
+      execution_health: {
+        ...execScore,
+        stalled_count: stalledInitiatives.length
+      },
+      department_alignment: deptCoordination,
+      goal_dependencies: goalDependencies,
+      followup_actions: followups,
+      resource_orchestration: resourceOrchestration,
+
+      // Phase 6.1 additions
+      ceo_priorities: priorities,
+      organizational_capacity: capacities,
+      portfolio_rankings: portRankings,
+
+      // Phase 6.2 EOS Completion Layer
+      control_tower: controlTower ?? undefined,
+      knowledge_graph_summary: graphSummary,
+      strategic_horizons: horizons
+    };
+  }
 }

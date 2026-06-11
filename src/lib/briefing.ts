@@ -1,6 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { getBookings, getTransactions } from "@/lib/laravel/api";
 import { getDynamicKPIs } from "./kpi";
+import { generateWithFallback } from "@/lib/ai/ai-client";
+import { z } from "zod";
+
+const BriefingAISchema = z.object({
+  summary: z.string(),
+  revenue_summary: z.string(),
+  booking_summary: z.string(),
+  complaint_summary: z.string(),
+  goal_summary: z.string(),
+  alerts_summary: z.string(),
+  opps_summary: z.string(),
+});
+
 
 export interface ExecutiveBriefing {
   id?: string;
@@ -93,8 +106,9 @@ export async function getOrCreateExecutiveBriefing(
     successfulTxns = successList.length;
     failedTxns = filteredTxns.length - successfulTxns;
   } catch (e) {
-    totalRevenue = type === "daily" ? 14820 : type === "weekly" ? 92100 : 384500;
-    successfulTxns = type === "daily" ? 12 : type === "weekly" ? 78 : 312;
+    totalRevenue = 0;
+    successfulTxns = 0;
+    failedTxns = 0;
   }
 
   // B. Bookings
@@ -109,9 +123,9 @@ export async function getOrCreateExecutiveBriefing(
     completedBookings = filteredBookings.filter((b: any) => ["booking.completed", "completed"].includes(b.status)).length;
     activeBookings = filteredBookings.filter((b: any) => ["pending", "assigned", "in_progress"].includes(b.status)).length;
   } catch (e) {
-    totalBookings = type === "daily" ? 31 : type === "weekly" ? 185 : 740;
-    completedBookings = type === "daily" ? 13 : type === "weekly" ? 92 : 410;
-    activeBookings = type === "daily" ? 18 : type === "weekly" ? 60 : 60;
+    totalBookings = 0;
+    completedBookings = 0;
+    activeBookings = 0;
   }
 
   // C. Unresolved Complaints count
@@ -123,7 +137,7 @@ export async function getOrCreateExecutiveBriefing(
       .eq("status", "open");
     activeComplaints = count || 0;
   } catch (e) {
-    activeComplaints = 1;
+    activeComplaints = 0;
   }
 
   // D. Telemetry warnings
@@ -135,7 +149,7 @@ export async function getOrCreateExecutiveBriefing(
       .eq("status", "active");
     activeAlerts = count || 0;
   } catch (e) {
-    activeAlerts = 1;
+    activeAlerts = 0;
   }
 
   // E. Strategic Opportunities count
@@ -147,7 +161,7 @@ export async function getOrCreateExecutiveBriefing(
       .eq("status", "open");
     opportunityCount = count || 0;
   } catch (e) {
-    opportunityCount = 3;
+    opportunityCount = 0;
   }
 
   // F. Fetch dynamic KPIs
@@ -165,14 +179,49 @@ export async function getOrCreateExecutiveBriefing(
   if (type === "weekly") label = `Weekly Brief for Week ${keys.weeklyKey.split("-W")[1]} (${now.getFullYear()})`;
   if (type === "monthly") label = `Monthly Brief for ${now.toLocaleString("en-IN", { month: 'long', year: 'numeric' })}`;
 
-  const revenue_summary = `Revenue is ₹${totalRevenue.toLocaleString("en-IN")} from ${successfulTxns} cleared payments. ${failedTxns} transactions failed in this ${type.replace("ly", "")} window.`;
-  const booking_summary = `Total Bookings processed: ${totalBookings} (${completedBookings} completed, ${activeBookings} currently active).`;
-  const complaint_summary = `Active unresolved customer complaints: ${activeComplaints} tickets pending in queue.`;
-  const goal_summary = `Goal Performance: ${progressText}.`;
-  const alerts_summary = `Active telemetry alerts detected: ${activeAlerts} hardware alerts operational.`;
-  const opps_summary = `${opportunityCount} open business growth opportunities detected. Expected potential revenue: ₹${(opportunityCount * 250).toLocaleString("en-IN")}.`;
+  let revenue_summary = `Revenue is ₹${totalRevenue.toLocaleString("en-IN")} from ${successfulTxns} cleared payments. ${failedTxns} transactions failed in this ${type.replace("ly", "")} window.`;
+  let booking_summary = `Total Bookings processed: ${totalBookings} (${completedBookings} completed, ${activeBookings} currently active).`;
+  let complaint_summary = `Active unresolved customer complaints: ${activeComplaints} tickets pending in queue.`;
+  let goal_summary = `Goal Performance: ${progressText || "No active targets"}.`;
+  let alerts_summary = `Active telemetry alerts detected: ${activeAlerts} hardware alerts operational.`;
+  let opps_summary = `${opportunityCount} open business growth opportunities detected. Expected potential revenue: ₹${(opportunityCount * 250).toLocaleString("en-IN")}.`;
+  let summary = `CEO Operating System ${label}. Overall business status is stable. Period revenue totals ₹${totalRevenue.toLocaleString("en-IN")}. There are ${activeBookings} active bookings under execution, ${activeComplaints} unresolved complaints, and ${activeAlerts} system alerts requiring attention.`;
 
-  const summary = `CEO Operating System ${label}. Overall business status is stable. Period revenue totals ₹${totalRevenue.toLocaleString("en-IN")}. There are ${activeBookings} active bookings under execution, ${activeComplaints} unresolved complaints, and ${activeAlerts} system alerts requiring attention.`;
+  try {
+    const systemPrompt = `You are the InnoVibe Executive Briefing AI. Your role is to analyze raw operational and financial metrics for InnoVibe (a high-growth smart mobility CRM startup) and draft highly professional, narrative-driven, and insightful summaries for the CEO dashboard. 
+Your summaries must be based strictly on the provided real metrics without inventing any fake statistics or placeholders. Keep the tone highly analytical, executive, objective, and direct.`;
+
+    const userPrompt = `Generate the daily/weekly/monthly briefing summaries for type "${type}" (${label}) with the following operational data:
+- Revenue: ₹${totalRevenue} from ${successfulTxns} successful transactions (${failedTxns} failed).
+- Bookings: ${totalBookings} total (${completedBookings} completed, ${activeBookings} active).
+- Unresolved Customer Complaints: ${activeComplaints} open tickets.
+- Goal Performance (KPIs): ${progressText || "None active"}.
+- Active Hardware Telemetry Alerts: ${activeAlerts} alerts active.
+- Strategic Growth Opportunities: ${opportunityCount} open opportunities.
+
+Requirements for each summary field:
+1. summary: A cohesive high-level operational overview of the business performance during this period. Keep it under 2 sentences.
+2. revenue_summary: An analytical summary of revenue and payment performance, highlighting successful vs failed transaction ratios.
+3. booking_summary: An analysis of booking and service delivery progression (completed vs active).
+4. complaint_summary: A summary of unresolved customer issues and their operational urgency.
+5. goal_summary: A professional assessment of strategic KPI target progress.
+6. alerts_summary: An evaluation of hardware health and pending telemetry system alerts.
+7. opps_summary: A strategic assessment of growth opportunities and their revenue potential.
+
+Ensure the output is a valid JSON object matching the requested schema.`;
+
+    const aiBrief = await generateWithFallback(systemPrompt, userPrompt, BriefingAISchema);
+    
+    summary = aiBrief.summary;
+    revenue_summary = aiBrief.revenue_summary;
+    booking_summary = aiBrief.booking_summary;
+    complaint_summary = aiBrief.complaint_summary;
+    goal_summary = aiBrief.goal_summary;
+    alerts_summary = aiBrief.alerts_summary;
+    opps_summary = aiBrief.opps_summary;
+  } catch (error) {
+    console.warn("Failed to generate AI executive briefing, falling back to heuristics:", error);
+  }
 
   // 4. Save to database
   const newBrief: ExecutiveBriefing = {

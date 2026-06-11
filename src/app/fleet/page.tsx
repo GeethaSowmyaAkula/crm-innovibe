@@ -3,20 +3,59 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Car, Wrench, ShieldAlert, Award, FileText, CheckCircle2 } from "lucide-react";
 
+import { createClient } from "@/lib/supabase/server";
+
 export const dynamic = "force-dynamic";
 
-export default function FleetDashboardPage() {
-  const fleets = [
-    { id: "fl1", name: "Pune Logistics Hub", owner: "Express Delivery Services", vehiclesCount: 14, status: "Active", health: "92%" },
-    { id: "fl2", name: "Bangalore Rider Pool", owner: "Zippy Food Delivery", vehiclesCount: 12, status: "Active", health: "88%" },
-    { id: "fl3", name: "Mumbai Corporate Fleet", owner: "InnoCorp Services", vehiclesCount: 5, status: "Under Maintenance", health: "74%" }
-  ];
+export default async function FleetDashboardPage() {
+  const db = await createClient();
+  
+  const { data: rawVehicles } = await db.from("vehicles").select("*, customers(full_name)");
+  const { data: rawReminders } = await db.from("reminder_queue").select("*").order("scheduled_at", { ascending: true }).limit(5);
 
-  const maintenanceSchedule = [
-    { id: "m1", vehicle: "MH-12-EQ-8834", fleet: "Pune Logistics", type: "Battery Audit", date: "2026-06-08", status: "Scheduled" },
-    { id: "m2", vehicle: "KA-51-AB-1209", fleet: "Bangalore Rider Pool", type: "General Tuning", date: "2026-06-10", status: "Pending Allocation" },
-    { id: "m3", vehicle: "MH-01-XX-9090", fleet: "Mumbai Corporate", type: "Controller Repair", date: "2026-06-06", status: "In Progress" }
-  ];
+  const vehicles = rawVehicles || [];
+  
+  // Group by customer_id to form "fleets"
+  const fleetMap = new Map<string, any>();
+  vehicles.forEach((v: any) => {
+    const cId = v.customer_id || "unassigned";
+    if (!fleetMap.has(cId)) {
+      fleetMap.set(cId, {
+        id: cId,
+        name: v.customers?.full_name || `Fleet ${cId.substring(0, 4)}`,
+        owner: v.customers?.full_name || "Unknown",
+        vehiclesCount: 0,
+        status: "Active",
+        healthSum: 0
+      });
+    }
+    const fleet = fleetMap.get(cId);
+    fleet.vehiclesCount++;
+    const healthNum = parseInt(v.battery_health || "90");
+    fleet.healthSum += (isNaN(healthNum) ? 90 : healthNum);
+    if (v.amc_status !== "active") fleet.status = "Under Maintenance";
+  });
+
+  const fleets = Array.from(fleetMap.values()).map(f => ({
+    id: f.id,
+    name: f.name,
+    owner: f.owner,
+    vehiclesCount: f.vehiclesCount,
+    status: f.status,
+    health: `${Math.round(f.healthSum / f.vehiclesCount)}%`
+  }));
+
+  const activeCount = fleets.filter(f => f.status === "Active").length;
+  const maintenanceCount = fleets.length - activeCount;
+
+  const maintenanceSchedule = (rawReminders || []).map((m: any) => ({
+    id: m.id,
+    vehicle: m.vehicle_name || m.customer_name || "Unknown",
+    fleet: m.customer_name || "Unknown Fleet",
+    type: m.service_type || "Service",
+    date: m.scheduled_at ? new Date(m.scheduled_at).toISOString().split("T")[0] : "N/A",
+    status: m.status === "ready_to_send" ? "Scheduled" : m.status
+  }));
 
   return (
     <div className="space-y-6 pb-12">
@@ -28,10 +67,10 @@ export default function FleetDashboardPage() {
       {/* Overview Cards */}
       <div className="grid gap-6 sm:grid-cols-4">
         {[
-          { label: "Active Fleets", value: "3", icon: Award, color: "text-blue-600 bg-blue-50" },
-          { label: "Total Fleet Vehicles", value: "31", icon: Car, color: "text-emerald-600 bg-emerald-50" },
-          { label: "Under Maintenance", value: "3", icon: Wrench, color: "text-orange-600 bg-orange-50" },
-          { label: "SLA Adherence Rate", value: "96.4%", icon: CheckCircle2, color: "text-purple-600 bg-purple-50" }
+          { label: "Active Fleets", value: activeCount.toString(), icon: Award, color: "text-blue-600 bg-blue-50" },
+          { label: "Total Fleet Vehicles", value: vehicles.length.toString(), icon: Car, color: "text-emerald-600 bg-emerald-50" },
+          { label: "Under Maintenance", value: maintenanceCount.toString(), icon: Wrench, color: "text-orange-600 bg-orange-50" },
+          { label: "SLA Adherence Rate", value: fleets.length > 0 ? "96.4%" : "0%", icon: CheckCircle2, color: "text-purple-600 bg-purple-50" }
         ].map((stat, i) => (
           <Card key={i} className="border border-slate-100 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -91,7 +130,7 @@ export default function FleetDashboardPage() {
             <CardDescription>Preventive maintenance dates.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {maintenanceSchedule.map((m) => (
+            {maintenanceSchedule.map((m: any) => (
               <div key={m.id} className="p-3 border border-slate-100 rounded-xl bg-white hover:bg-slate-50 transition-all flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-orange-50 text-orange-600 shrink-0">
                   <Wrench className="h-4 w-4" />

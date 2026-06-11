@@ -29,11 +29,10 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (fetchErr || !rec) {
-      // Degrade gracefully with mock success if table is empty/mocking
       return NextResponse.json({ 
-        ok: true, 
-        message: `[MOCK EXECUTION] Handled action '${action}' for recommendation #${id}.` 
-      }, { status: 200 });
+        ok: false, 
+        error: `Recommendation #${id} not found.` 
+      }, { status: 404 });
     }
 
     let message = "";

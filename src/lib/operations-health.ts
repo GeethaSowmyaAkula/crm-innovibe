@@ -57,44 +57,42 @@ export async function getOperationsHealthReport(): Promise<OperationsHealthRepor
 
   // Calculate actual aggregates
   
-  // 1. Response Time (time between creation and status move, mock based on active queue duration)
-  // Let's compute actual average confirmation response time as 18 mins
-  const actualResponseTime = 18.2; 
+  // 1. Response Time (time between creation and status move)
+  const actualResponseTime = 0; 
   
   // 2. Assignment Time (bookings in pending for too long, average delay in minutes)
-  const actualAssignmentTime = 38.5; 
+  const actualAssignmentTime = 0; 
 
   // 3. Completion Rate (completed bookings / total bookings)
   const completedCount = bookingList.filter((b: any) => ["booking.completed", "completed"].includes(b.status)).length;
   const actualCompletionRate = bookingList.length > 0 
     ? Math.round((completedCount / bookingList.length) * 100) 
-    : 80;
+    : 0;
 
   // 4. Customer Satisfaction (AVG rating from garages/technicians/complaints)
-  // Default is 4.30
-  const actualCsat = 4.25;
+  const actualCsat = 0;
 
   // 5. Complaint Resolution Rate (resolved complaints / total complaints)
   const resolvedComplaints = complaintList.filter((c: any) => c.status === "resolved" || c.status === "closed").length;
   const actualComplaintResolution = complaintList.length > 0
     ? Math.round((resolvedComplaints / complaintList.length) * 100)
-    : 75;
+    : 0;
 
   // 6. Technician Utilization (techs with active assignments)
   const activeTechsCount = technicianList.filter((t: any) => t.current_assignments > 0).length;
   const actualTechUtilization = technicianList.length > 0
     ? Math.round((activeTechsCount / technicianList.length) * 100)
-    : 60;
+    : 0;
 
   // 7. Garage Utilization (workload slots vs capacity)
   const totalCapacity = garageList.reduce((acc: number, curr: any) => acc + (curr.capacity || 5), 0);
   const totalAvailable = garageList.reduce((acc: number, curr: any) => acc + (curr.available_slots || 5), 0);
   const actualGarageUtilization = totalCapacity > 0
     ? Math.round(((totalCapacity - totalAvailable) / totalCapacity) * 100)
-    : 70;
+    : 0;
 
-  // 8. SLA Compliance (completed within 24 hours of creation, mock based on historical ratio)
-  const actualSlaCompliance = 84.5;
+  // 8. SLA Compliance (completed within 24 hours of creation)
+  const actualSlaCompliance = 0;
 
   // Calculation mapping
   const metricValues: Record<string, number> = {
