@@ -1,0 +1,272 @@
+{
+  "name": "InnoVibe — Feedback Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "f2b2c3d4-0001-0001-0001-000000000001",
+      "name": "Every 1 Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [180, 320]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/sync-feedback",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "f2b2c3d4-0002-0002-0002-000000000002",
+      "name": "1. Sync Completed Feedback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [400, 320]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "feedback_queue",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "pending",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual"
+      },
+      "id": "f2b2c3d4-0003-0003-0003-000000000003",
+      "name": "2. Read Pending Surveys",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [620, 320],
+      "credentials": {
+        "supabaseApi": {
+          "id": "innovibe-supabase-2",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "due-at-check",
+              "leftValue": "={{ new Date($json.due_at) <= new Date() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "f2b2c3d4-0004-0004-0004-000000000004",
+      "name": "3. Is Due?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [840, 320]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "feedback_queue",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.id }}",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "ready_to_send"
+            },
+            {
+              "fieldId": "automation_status",
+              "fieldValue": "picked_by_n8n"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "f2b2c3d4-0005-0005-0005-000000000005",
+      "name": "4. Mark → ready_to_send",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1060, 320],
+      "credentials": {
+        "supabaseApi": {
+          "id": "innovibe-supabase-2",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "infoMessage": "=Hi {{ $json.customer_name }},\n\nHow was your recent EV service for {{ $json.vehicle_name }}?\n\nPlease rate us:\n1 ⭐\n2 ⭐⭐\n3 ⭐⭐⭐\n4 ⭐⭐⭐⭐\n5 ⭐⭐⭐⭐⭐"
+      },
+      "id": "f2b2c3d4-0006-0006-0006-000000000006",
+      "name": "5. Send WhatsApp (Placeholder)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1280, 320]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "feedback_queue",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.id }}",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "automation_status",
+              "fieldValue": "completed"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "sent"
+            },
+            {
+              "fieldId": "sent_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "f2b2c3d4-0007-0007-0007-000000000007",
+      "name": "6. Mark → completed",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1500, 320],
+      "credentials": {
+        "supabaseApi": {
+          "id": "innovibe-supabase-2",
+          "name": "Supabase account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 1 Hour": {
+      "main": [
+        [
+          {
+            "node": "1. Sync Completed Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Sync Completed Feedback": {
+      "main": [
+        [
+          {
+            "node": "2. Read Pending Surveys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Read Pending Surveys": {
+      "main": [
+        [
+          {
+            "node": "3. Is Due?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Is Due?": {
+      "main": [
+        [
+          {
+            "node": "4. Mark → ready_to_send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Mark → ready_to_send": {
+      "main": [
+        [
+          {
+            "node": "5. Send WhatsApp (Placeholder)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Send WhatsApp (Placeholder)": {
+      "main": [
+        [
+          {
+            "node": "6. Mark → completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

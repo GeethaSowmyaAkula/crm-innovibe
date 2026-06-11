@@ -1,0 +1,231 @@
+{
+  "name": "InnoVibe — Reminder Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "f1a2b3c4-0001-0001-0001-000000000001",
+      "name": "Every 1 Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [180, 320]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/sync-reminders",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "f1a2b3c4-0002-0002-0002-000000000002",
+      "name": "1. Sync Completed Bookings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [400, 320]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "reminder_queue",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "pending",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual"
+      },
+      "id": "f1a2b3c4-0003-0003-0003-000000000003",
+      "name": "2. Read Pending Reminders",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [620, 320],
+      "credentials": {
+        "supabaseApi": {
+          "id": "innovibe-supabase",
+          "name": "InnoVibe Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "due-at-check",
+              "leftValue": "={{ new Date($json.due_at) <= new Date() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "f1a2b3c4-0004-0004-0004-000000000004",
+      "name": "3. Is Due?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [840, 320]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "reminder_queue",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.id }}",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "ready_to_send"
+            },
+            {
+              "fieldId": "sent_status",
+              "fieldValue": "ready_to_send"
+            },
+            {
+              "fieldId": "automation_status",
+              "fieldValue": "picked_by_n8n"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "f1a2b3c4-0005-0005-0005-000000000005",
+      "name": "4. Mark → ready_to_send",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1060, 320],
+      "credentials": {
+        "supabaseApi": {
+          "id": "innovibe-supabase",
+          "name": "InnoVibe Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "seconds"
+      },
+      "id": "f1a2b3c4-0006-0006-0006-000000000006",
+      "name": "5. Wait 1s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1280, 320],
+      "webhookId": "innovibe-wait-1s"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "reminder_queue",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.id }}",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "automation_status",
+              "fieldValue": "completed"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "f1a2b3c4-0007-0007-0007-000000000007",
+      "name": "6. Mark → completed",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1500, 320],
+      "credentials": {
+        "supabaseApi": {
+          "id": "innovibe-supabase",
+          "name": "InnoVibe Supabase"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 1 Hour": {
+      "main": [[{ "node": "1. Sync Completed Bookings", "type": "main", "index": 0 }]]
+    },
+    "1. Sync Completed Bookings": {
+      "main": [[{ "node": "2. Read Pending Reminders", "type": "main", "index": 0 }]]
+    },
+    "2. Read Pending Reminders": {
+      "main": [[{ "node": "3. Is Due?", "type": "main", "index": 0 }]]
+    },
+    "3. Is Due?": {
+      "main": [[{ "node": "4. Mark → ready_to_send", "type": "main", "index": 0 }]]
+    },
+    "4. Mark → ready_to_send": {
+      "main": [[{ "node": "5. Wait 1s", "type": "main", "index": 0 }]]
+    },
+    "5. Wait 1s": {
+      "main": [[{ "node": "6. Mark → completed", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "tags": ["innovibe", "crm", "automation", "phase-2"],
+  "triggerCount": 1,
+  "versionId": "phase-2-v2",
+  "meta": {
+    "notes": "InnoVibe Phase 2: booking.completed → reminder_queue → n8n status pipeline. No WhatsApp yet.",
+    "supabaseUrl": "https://lufynzbrcfrcrgrecxfb.supabase.co",
+    "crmUrl": "http://localhost:3000"
+  }
+}
