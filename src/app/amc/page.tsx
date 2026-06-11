@@ -29,8 +29,16 @@ export default function AMCPage() {
         .select("id, full_name, phone, amc_status, amc_expiry_date, amc_plan, fleet_size, lifetime_value")
         .not("amc_status", "is", null);
 
-      if (error) throw error;
-      setContracts(data || []);
+      if (error) {
+        if (error.code === "42703") {
+          console.warn("AMC columns not found on customers table. Returning empty array.");
+          setContracts([]);
+        } else {
+          throw error;
+        }
+      } else {
+        setContracts(data || []);
+      }
     } catch (err) {
       console.error("Failed to fetch AMC contracts", err);
     } finally {

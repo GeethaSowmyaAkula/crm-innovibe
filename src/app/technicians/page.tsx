@@ -23,6 +23,9 @@ export default function TechniciansPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTechnician, setNewTechnician] = useState({ name: "", phone: "", specialty: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function loadTechnicians() {
     try {
@@ -42,6 +45,37 @@ export default function TechniciansPage() {
   useEffect(() => {
     loadTechnicians();
   }, []);
+
+  const handleAddTechnician = async () => {
+    if (!newTechnician.name || !newTechnician.phone) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/technicians", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: crypto.randomUUID(),
+          name: newTechnician.name,
+          phone: newTechnician.phone,
+          skills: [newTechnician.specialty || "General Service"],
+          availability: "available",
+          current_assignments: 0,
+          garage_id: null
+        }),
+      });
+      if (res.ok) {
+        setIsAdding(false);
+        setNewTechnician({ name: "", phone: "", specialty: "" });
+        loadTechnicians();
+      } else {
+        console.error("Failed to add technician");
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const specialties = Array.from(
     new Set(technicians.map((t) => t.specialty).filter(Boolean))
@@ -76,7 +110,10 @@ export default function TechniciansPage() {
           </span>
         </div>
         <div className="crm-toolbar-actions">
-          <button className="crm-btn-primary crm-btn-sm">
+          <button 
+            className="crm-btn-primary crm-btn-sm"
+            onClick={() => setIsAdding(true)}
+          >
             <Plus className="h-3.5 w-3.5" />
             Add Technician
           </button>
@@ -210,6 +247,60 @@ export default function TechniciansPage() {
           </div>
         )}
       </div>
+
+      {/* Add Technician Modal */}
+      {isAdding && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
+            <h2 className="text-xl font-bold mb-4">Add Technician</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <input
+                  className="crm-input w-full"
+                  value={newTechnician.name}
+                  onChange={(e) => setNewTechnician({ ...newTechnician, name: e.target.value })}
+                  placeholder="e.g. John Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                <input
+                  className="crm-input w-full"
+                  value={newTechnician.phone}
+                  onChange={(e) => setNewTechnician({ ...newTechnician, phone: e.target.value })}
+                  placeholder="e.g. 555-0123"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Specialty</label>
+                <input
+                  className="crm-input w-full"
+                  value={newTechnician.specialty}
+                  onChange={(e) => setNewTechnician({ ...newTechnician, specialty: e.target.value })}
+                  placeholder="e.g. Engine Repair"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                className="crm-btn-secondary"
+                onClick={() => setIsAdding(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                className="crm-btn-primary"
+                onClick={handleAddTechnician}
+                disabled={isSubmitting || !newTechnician.name || !newTechnician.phone}
+              >
+                {isSubmitting ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

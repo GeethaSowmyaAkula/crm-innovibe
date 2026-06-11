@@ -23,9 +23,10 @@ interface Props {
   vehicles: Vehicle[];
   garages: Garage[];
   technicians: Tech[];
+  onSuccess?: () => void;
 }
 
-export function AddBookingButton({ customers, vehicles, garages, technicians }: Props) {
+export function AddBookingButton({ customers, vehicles, garages, technicians, onSuccess }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -60,14 +61,18 @@ export function AddBookingButton({ customers, vehicles, garages, technicians }: 
     if (error) { toast.error(error.message); return; }
     toast.success("Booking created successfully!");
     setOpen(false);
-    router.refresh();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.refresh();
+    }
   };
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
-        <Plus className="h-4 w-4" />Create Booking
-      </Button>
+      <button onClick={() => setOpen(true)} className="crm-btn-primary crm-btn-sm">
+        <Plus className="h-3.5 w-3.5" />New Booking
+      </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>

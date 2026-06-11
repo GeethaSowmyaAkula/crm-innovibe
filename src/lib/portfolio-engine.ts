@@ -4,6 +4,8 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { generateWithFallback } from "@/lib/ai/ai-client";
+import { z } from "zod";
 
 export interface PortfolioRanking {
   initiative_id: string;
@@ -49,22 +51,18 @@ export async function analyzePortfolio(portfolioId: string): Promise<PortfolioRa
       if (!init) continue;
 
       // Extract expected impact value (revenue proxy)
-      let expectedImpactVal = 25000; // default fallback
+      let expectedImpactVal = 0; // default fallback
       if (init.expected_impact && !isNaN(Number(init.expected_impact))) {
         expectedImpactVal = Number(init.expected_impact);
-      } else if (init.title.toLowerCase().includes("amc")) {
-        expectedImpactVal = 50000;
-      } else if (init.title.toLowerCase().includes("webhook")) {
-        expectedImpactVal = 28000;
       }
 
       // Calculate ROI = (Expected Impact / Budget) * 100
-      const budgetVal = Number(alloc.allocated_budget || init.budget || 5000);
-      const roi = budgetVal > 0 ? (expectedImpactVal / budgetVal) * 100 : 100;
+      const budgetVal = Number(alloc.allocated_budget || init.budget || 0);
+      const roi = budgetVal > 0 ? (expectedImpactVal / budgetVal) * 100 : 0;
 
       // Get latest execution probability / risk score
       const prob = probList.find((p: any) => p.commitment_id === init.id);
-      const completionProb = prob ? Number(prob.completion_probability) : Number(init.success_probability || 90.00);
+      const completionProb = prob ? Number(prob.completion_probability) : Number(init.success_probability || 0.00);
       const riskScore = 100.00 - completionProb;
 
       // Determine Acceleration, Pause, or Termination Recommendation:
@@ -99,6 +97,48 @@ export async function analyzePortfolio(portfolioId: string): Promise<PortfolioRa
         acceleration_recommendation: rec,
         rationale
       });
+    }
+
+    if (rankings.length > 0) {
+      try {
+        const schema = z.object({
+          analyses: z.array(z.object({
+            initiative_id: z.string(),
+            rationale: z.string()
+          }))
+        });
+
+        const promptData = rankings.map(r => ({
+          initiative_id: r.initiative_id,
+          title: r.title,
+          category: r.category,
+          budget: r.budget,
+          allocated_budget: r.allocated_budget,
+          expected_impact_val: r.expected_impact_val,
+          roi: r.roi,
+          risk_score: r.risk_score,
+          progress: r.progress,
+          status: r.status,
+          acceleration_recommendation: r.acceleration_recommendation,
+          default_rationale: r.rationale
+        }));
+
+        const response = await generateWithFallback(
+          `You are the InnoVibe Strategic Portfolio Analyst AI. Your job is to analyze the strategic initiatives portfolio and write a highly professional, detailed strategic rationale (1-2 sentences) explaining the recommendation (Accelerate/Pause/Terminate/Maintain) for each initiative based on its performance data. Keep each rationale under 25 words and highly action-oriented.`,
+          `Analyze the following strategic initiative portfolio rankings and generate a tailored rationale for each item.
+          Initiatives: ${JSON.stringify(promptData, null, 2)}`,
+          schema
+        );
+
+        response.analyses.forEach(analysis => {
+          const matched = rankings.find(r => r.initiative_id === analysis.initiative_id);
+          if (matched) {
+            matched.rationale = analysis.rationale;
+          }
+        });
+      } catch (error) {
+        console.warn("Failed to generate custom rationales using AI, keeping default heuristics:", error);
+      }
     }
 
     // Sort by ROI (descending) and risk score (ascending)

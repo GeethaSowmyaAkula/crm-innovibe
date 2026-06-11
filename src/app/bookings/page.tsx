@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { BellRing, Loader2, CalendarX, Plus, RefreshCw } from "lucide-react";
+import { AddBookingButton } from "@/components/forms/add-booking-button";
+import { createClient } from "@/lib/supabase/client";
 
 interface Booking {
   id: string;
   customer_id: string;
   vehicle_id: string;
-  service_type: string;
+  issue_type: string | null;
   status: string; // pending, confirmed, completed, cancelled
-  booking_date: string;
-  amount: number | null;
+  preferred_slot: string | null;
+  amount?: number | null;
   created_at: string;
   customers: {
     full_name: string | null;
@@ -21,6 +23,11 @@ interface Booking {
     model: string | null;
   } | null;
 }
+
+interface Customer { id: string; full_name: string; }
+interface Vehicle { id: string; registration_number: string; customer_id: string; }
+interface Garage  { id: string; name: string; }
+interface Tech    { id: string; name: string; }
 
 const TABS = [
   { id: "all", label: "All Bookings" },
@@ -35,6 +42,11 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("all");
+
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [garages, setGarages] = useState<Garage[]>([]);
+  const [technicians, setTechnicians] = useState<Tech[]>([]);
 
   async function loadBookings() {
     try {
@@ -51,8 +63,28 @@ export default function BookingsPage() {
     }
   }
 
+  async function loadMetadata() {
+    try {
+      const supabase = createClient();
+      const [custRes, vehRes, garRes, techRes] = await Promise.all([
+        supabase.from("customers").select("id, full_name").order("full_name"),
+        supabase.from("vehicles").select("id, registration_number, customer_id"),
+        supabase.from("garages").select("id, name").order("name"),
+        supabase.from("technicians").select("id, name").order("name")
+      ]);
+      
+      if (custRes.data) setCustomers(custRes.data);
+      if (vehRes.data) setVehicles(vehRes.data);
+      if (garRes.data) setGarages(garRes.data);
+      if (techRes.data) setTechnicians(techRes.data);
+    } catch (err) {
+      console.error("Failed to load booking metadata", err);
+    }
+  }
+
   useEffect(() => {
     loadBookings();
+    loadMetadata();
   }, []);
 
   const filtered = bookings.filter((b) => {
@@ -76,10 +108,13 @@ export default function BookingsPage() {
             <RefreshCw className="h-3.5 w-3.5" />
             Refresh
           </button>
-          <button className="crm-btn-primary crm-btn-sm">
-            <Plus className="h-3.5 w-3.5" />
-            New Booking
-          </button>
+          <AddBookingButton
+            customers={customers}
+            vehicles={vehicles}
+            garages={garages}
+            technicians={technicians}
+            onSuccess={loadBookings}
+          />
         </div>
       </div>
 
@@ -157,7 +192,7 @@ export default function BookingsPage() {
                       </div>
                     </td>
                     <td className="text-slate-700 font-medium">
-                      {b.service_type || "General Maintenance"}
+                      {b.issue_type || "General Maintenance"}
                     </td>
                     <td>
                       {b.status === "completed" && (
@@ -192,8 +227,8 @@ export default function BookingsPage() {
                       )}
                     </td>
                     <td>
-                      {b.booking_date
-                        ? new Date(b.booking_date).toLocaleDateString("en-IN")
+                      {(b.preferred_slot || b.created_at)
+                        ? new Date(b.preferred_slot || b.created_at).toLocaleDateString("en-IN")
                         : "—"}
                     </td>
                     <td className="text-right font-bold text-slate-900">

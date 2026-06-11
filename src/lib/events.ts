@@ -76,7 +76,7 @@ export async function publishEvent(
     if (eventError) {
       // Degrade gracefully if tables aren't present yet (log to console)
       if (eventError.code === "42P01") {
-        console.warn(`[EVENT PUBLISH MOCKED] Table 'events' not found. Event: ${eventType}`);
+        console.warn(`[EVENT PUBLISH FAILED] Table 'events' not found. Event: ${eventType}`);
         return null;
       }
       console.error(`Failed to publish event ${eventType}:`, eventError.message);

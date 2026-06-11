@@ -21,6 +21,8 @@ export default function CustomersPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [amcFilter, setAmcFilter] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({ full_name: "", phone: "", email: "" });
 
   useEffect(() => {
     async function loadCustomers() {
@@ -50,6 +52,24 @@ export default function CustomersPage() {
     return textMatch && amcMatch;
   });
 
+  const handleAddCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const id = crypto.randomUUID();
+      const res = await fetch("/api/customers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...newCustomer })
+      });
+      if (!res.ok) throw new Error("Failed to add customer");
+      setIsAdding(false);
+      setNewCustomer({ full_name: "", phone: "", email: "" });
+      window.location.reload();
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div className="crm-page">
       {/* Toolbar */}
@@ -62,7 +82,7 @@ export default function CustomersPage() {
           </span>
         </div>
         <div className="crm-toolbar-actions">
-          <button className="crm-btn-primary">
+          <button className="crm-btn-primary" onClick={() => setIsAdding(true)}>
             <Plus className="h-4 w-4" />
             Add Customer
           </button>
@@ -194,6 +214,43 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
+      {/* Add Customer Modal */}
+      {isAdding && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
+            <h2 className="text-xl font-bold mb-4">Add New Customer</h2>
+            <form onSubmit={handleAddCustomer} className="flex flex-col gap-3">
+              <input
+                type="text"
+                required
+                placeholder="Full Name"
+                className="crm-input"
+                value={newCustomer.full_name}
+                onChange={(e) => setNewCustomer({ ...newCustomer, full_name: e.target.value })}
+              />
+              <input
+                type="text"
+                required
+                placeholder="Phone Number"
+                className="crm-input"
+                value={newCustomer.phone}
+                onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+              />
+              <input
+                type="email"
+                placeholder="Email Address"
+                className="crm-input"
+                value={newCustomer.email}
+                onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-lg font-medium">Cancel</button>
+                <button type="submit" className="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">Save Customer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

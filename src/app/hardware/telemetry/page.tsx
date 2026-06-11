@@ -3,15 +3,50 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Cpu, Zap, BatteryCharging, ShieldAlert } from "lucide-react";
 
+import { createClient } from "@/lib/supabase/server";
+
 export const dynamic = "force-dynamic";
 
-export default function TelemetryLogsPage() {
-  const telemetryLogs = [
-    { id: "t1", vehicle: "MH-12-EQ-8834", soc: "42%", temp: "45°C", voltage: "72.4V", current: "-12.5A", motorTemp: "62°C", status: "Warning" },
-    { id: "t2", vehicle: "KA-51-AB-1209", soc: "88%", temp: "32°C", voltage: "74.1V", current: "2.1A", motorTemp: "38°C", status: "Optimal" },
-    { id: "t3", vehicle: "MH-01-XX-9090", soc: "15%", temp: "38°C", voltage: "68.2V", current: "-42.0A", motorTemp: "70°C", status: "Critical" },
-    { id: "t4", vehicle: "DL-03-CC-4451", soc: "96%", temp: "29°C", voltage: "74.8V", current: "0.0A", motorTemp: "25°C", status: "Optimal" }
-  ];
+export default async function TelemetryLogsPage() {
+  const db = await createClient();
+  const { data: rawVehicles } = await db.from("vehicles").select("id, registration_number, model, customers(full_name)");
+  const { data: rawTelemetry } = await db.from("vehicles_telemetry").select("*");
+
+  const telemetryMap = new Map<string, any>((rawTelemetry || []).map((t: any) => [t.vehicle_id, t]));
+  const vehicles = rawVehicles || [];
+
+  const telemetryLogs = vehicles.map((v: any) => {
+    const t = telemetryMap.get(v.id);
+    const fleetName = v.customers?.full_name || "Unassigned";
+    if (t) {
+      return {
+        id: v.id,
+        vehicle: v.registration_number || v.model || "Unknown",
+        fleet: fleetName,
+        soc: t.soc ? `${t.soc}%` : "N/A",
+        temp: t.battery_temp ? `${t.battery_temp}°C` : "N/A",
+        voltage: t.voltage ? `${t.voltage}V` : "N/A",
+        current: t.current ? `${t.current}A` : "N/A",
+        motorTemp: t.motor_temp ? `${t.motor_temp}°C` : "N/A",
+        status: t.status || "Optimal"
+      };
+    } else {
+      return {
+        id: v.id,
+        vehicle: v.registration_number || v.model || "Unknown",
+        fleet: fleetName,
+        soc: "N/A",
+        temp: "N/A",
+        voltage: "N/A",
+        current: "N/A",
+        motorTemp: "N/A",
+        status: "Offline"
+      };
+    }
+  });
+
+  const onlineCount = telemetryLogs.filter((t: any) => t.status !== "Offline").length;
+  const activeAlerts = telemetryLogs.filter((t: any) => t.status === "Warning" || t.status === "Critical").length;
 
   return (
     <div className="space-y-6 pb-12">
@@ -28,7 +63,7 @@ export default function TelemetryLogsPage() {
             <Cpu className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-950">28 / 31</div>
+            <div className="text-2xl font-bold text-slate-950">{onlineCount} / {vehicles.length}</div>
           </CardContent>
         </Card>
 
@@ -38,7 +73,7 @@ export default function TelemetryLogsPage() {
             <BatteryCharging className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-950">34.6°C</div>
+            <div className="text-2xl font-bold text-slate-950">{onlineCount > 0 ? "34.6°C" : "N/A"}</div>
           </CardContent>
         </Card>
 
@@ -48,7 +83,7 @@ export default function TelemetryLogsPage() {
             <ShieldAlert className="h-4 w-4 text-red-500 animate-pulse" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-950">2</div>
+            <div className="text-2xl font-bold text-slate-950">{activeAlerts}</div>
           </CardContent>
         </Card>
       </div>
@@ -64,6 +99,7 @@ export default function TelemetryLogsPage() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="text-slate-500 font-semibold text-xs">Vehicle Plate</TableHead>
+                <TableHead className="text-slate-500 font-semibold text-xs">Fleet / Owner</TableHead>
                 <TableHead className="text-slate-500 font-semibold text-xs">State of Charge (SoC)</TableHead>
                 <TableHead className="text-slate-500 font-semibold text-xs">Battery Temp</TableHead>
                 <TableHead className="text-slate-500 font-semibold text-xs">Voltage</TableHead>
@@ -73,9 +109,10 @@ export default function TelemetryLogsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {telemetryLogs.map((log) => (
+              {telemetryLogs.map((log: any) => (
                 <TableRow key={log.id} className="hover:bg-slate-50/50">
                   <TableCell className="font-bold text-xs text-slate-800">{log.vehicle}</TableCell>
+                  <TableCell className="text-xs text-slate-600 font-medium">{log.fleet}</TableCell>
                   <TableCell className="text-xs text-slate-700 font-bold">{log.soc}</TableCell>
                   <TableCell className="text-xs text-slate-600 font-medium">{log.temp}</TableCell>
                   <TableCell className="text-xs text-slate-600 font-medium">{log.voltage}</TableCell>
@@ -89,6 +126,8 @@ export default function TelemetryLogsPage() {
                           ? "text-green-700 bg-green-50 border-green-200" 
                           : log.status === "Warning" 
                           ? "text-orange-700 bg-orange-50 border-orange-200"
+                          : log.status === "Offline"
+                          ? "text-slate-700 bg-slate-100 border-slate-200"
                           : "text-red-700 bg-red-50 border-red-200"
                       }
                     >

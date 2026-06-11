@@ -115,7 +115,7 @@ export default function OperationsCommandPage() {
         body: JSON.stringify({
           action: "approve",
           executionId,
-          approvedBy: "system" // replaced hardcoded mock UUID with system fallback
+          approvedBy: "system" // fallback to system user
         })
       });
       const data = await res.json();

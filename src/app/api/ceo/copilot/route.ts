@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const { question } = await req.json();
+    const { question, history } = await req.json();
 
     if (!question || question.trim() === "") {
       return NextResponse.json(
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const result = await askCEOQuestion(question);
+    const result = await askCEOQuestion(question, history);
     return NextResponse.json({
       success: true,
       answer: result.answer,

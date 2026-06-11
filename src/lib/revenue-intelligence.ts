@@ -5,6 +5,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getTransactions, getBookings, getUsers, getVehicles, getMembershipPlans, getServices } from "@/lib/laravel/api";
+import { generateWithFallback } from "@/lib/ai/ai-client";
+import { z } from "zod";
 
 export interface LeakageItem {
   leakage_type: string;
@@ -149,6 +151,43 @@ export async function calculateRevenueLeakages(): Promise<LeakageItem[]> {
       }
     }
   });
+
+  if (leakages.length > 0) {
+    try {
+      const schema = z.object({
+        leakages: z.array(z.object({
+          index: z.number(),
+          root_cause: z.string(),
+          suggested_action: z.string()
+        }))
+      });
+      
+      const promptData = leakages.map((l, idx) => ({
+        index: idx,
+        type: l.leakage_type,
+        amount: l.amount,
+        affected_entity: l.affected_entity,
+        root_cause_default: l.root_cause,
+        suggested_action_default: l.suggested_action
+      }));
+      
+      const response = await generateWithFallback(
+        `You are the InnoVibe Revenue Audit AI. Your job is to analyze suspected revenue leakages and rewrite their root causes and suggested actions to be context-aware, highly professional, and actionable. Keep each field under 15 words. Maintain the same index mapping.`,
+        `Review the following detected revenue leakage items and generate high-quality, professional 'root_cause' and 'suggested_action' for each.
+        Data: ${JSON.stringify(promptData, null, 2)}`,
+        schema
+      );
+      
+      response.leakages.forEach(item => {
+        if (leakages[item.index]) {
+          leakages[item.index].root_cause = item.root_cause;
+          leakages[item.index].suggested_action = item.suggested_action;
+        }
+      });
+    } catch (error) {
+      console.warn("Failed to enrich leakages using AI, using default heuristics:", error);
+    }
+  }
 
   return leakages;
 }
@@ -374,13 +413,7 @@ export async function calculateRevenueForecasts(): Promise<Array<{ month: string
   }));
 
   if (actuals.length === 0) {
-    // Return mock data if nothing in DB
-    const m = new Date();
-    return Array.from({ length: 3 }).map((_, i) => {
-      const nextM = new Date(m.getFullYear(), m.getMonth() + i + 1, 1);
-      const key = `${nextM.getFullYear()}-${String(nextM.getMonth() + 1).padStart(2, '0')}`;
-      return { month: key, revenue: 15000 + i * 500, type: "forecast" as const };
-    });
+    return [];
   }
 
   // Linear regression inputs: x = index, y = revenue
@@ -572,7 +605,7 @@ export async function evaluateRevenueWarRoom(): Promise<{
     ? profiles.reduce((sum: number, p: any) => sum + Number(p.churn_risk_score), 0) / profiles.length
     : 28.5; // baseline fallback
 
-  const triggers: string[] = [];
+  let triggers: string[] = [];
 
   if (currentRevenue < revenueTarget) {
     triggers.push(`Current Month Revenue (₹${currentRevenue}) is below target (₹${revenueTarget}).`);
@@ -584,6 +617,26 @@ export async function evaluateRevenueWarRoom(): Promise<{
 
   if (avgChurnRisk > 40) {
     triggers.push(`Average cohort churn risk (${avgChurnRisk.toFixed(1)}%) exceeds baseline risk threshold.`);
+  }
+
+  if (triggers.length > 0) {
+    try {
+      const schema = z.object({
+        enriched_triggers: z.array(z.string())
+      });
+      const response = await generateWithFallback(
+        `You are the InnoVibe Financial Command Center AI. The Revenue War Room is active. Your job is to rewrite the activation triggers to be highly professional, strategic, and detailed, incorporating the raw metrics and explaining the operational context in one concise sentence per trigger.`,
+        `Rewrite the following active war room triggers:
+        - Triggers list: ${JSON.stringify(triggers)}
+        - Context: Current revenue is ₹${currentRevenue} (Target: ₹${revenueTarget}), Total active leakage is ₹${totalLeakage} (Threshold: ₹3,000), Average cohort churn risk is ${avgChurnRisk.toFixed(1)}% (Threshold: 40%).`,
+        schema
+      );
+      if (response.enriched_triggers && response.enriched_triggers.length > 0) {
+        triggers = response.enriched_triggers;
+      }
+    } catch (error) {
+      console.warn("Failed to enrich war room triggers using AI, using default heuristics:", error);
+    }
   }
 
   return {
@@ -664,12 +717,34 @@ export async function calculateRevenueFlywheel(): Promise<FlywheelState> {
   const weakLink = links[0].name;
 
   let opportunity = "";
-  if (weakLink === "AMC Plan Coverages") {
-    opportunity = "Launch checkout bundling campaign during vehicle inspection bookings.";
-  } else if (weakLink === "Payment Gateway Integration") {
-    opportunity = "Upgrade payment callback hooks and dispatch retry links.";
-  } else {
-    opportunity = "Incentivize positive ratings with ₹250 wallet credit vouchers.";
+  try {
+    const schema = z.object({
+      opportunity_description: z.string()
+    });
+    const response = await generateWithFallback(
+      `You are the InnoVibe Growth Intelligence AI. Your job is to analyze the revenue flywheel conversion metrics and draft a custom, highly strategic, and actionable growth opportunity description (1-2 sentences) addressing the identified weak link. Keep it concrete, direct, and under 30 words.`,
+      `Flywheel Metrics:
+      - Customer Acquisition Rate: ${acqRate.toFixed(1)}%
+      - Booking Frequency: ${bookingFreq.toFixed(2)} bookings/customer
+      - Payment Success Rate: ${paymentSuccessRate.toFixed(1)}%
+      - AMC Penetration Rate: ${amcPenetrationRate.toFixed(1)}%
+      - Retention Rate: ${retentionRate.toFixed(1)}%
+      - Referral Rate: ${referralRate.toFixed(1)}%
+      - Identified Weakest Link: ${weakLink}
+      
+      Generate a custom opportunity description targeting the weak link.`,
+      schema
+    );
+    opportunity = response.opportunity_description;
+  } catch (error) {
+    console.warn("Failed to generate flywheel opportunity using AI, falling back to heuristics:", error);
+    if (weakLink === "AMC Plan Coverages") {
+      opportunity = "Launch checkout bundling campaign during vehicle inspection bookings.";
+    } else if (weakLink === "Payment Gateway Integration") {
+      opportunity = "Upgrade payment callback hooks and dispatch retry links.";
+    } else {
+      opportunity = "Incentivize positive ratings with ₹250 wallet credit vouchers.";
+    }
   }
 
   return {

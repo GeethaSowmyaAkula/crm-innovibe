@@ -41,8 +41,16 @@ export default function TransactionsPage() {
         .select("*, customers(full_name)")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setTransactions((data || []) as any);
+      if (error) {
+        if (error.code === "PGRST205") {
+          console.warn("Transactions table not found in Supabase. Returning empty array.");
+          setTransactions([]);
+        } else {
+          throw error;
+        }
+      } else {
+        setTransactions((data || []) as any);
+      }
     } catch (err) {
       console.error("Failed to load transactions", err);
     } finally {
