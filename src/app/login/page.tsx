@@ -35,8 +35,7 @@ export default function LoginPage() {
       if (normalizedUsername === "admin" && password === "innovibe") {
         document.cookie = `aios_role=CEO; path=/; max-age=31536000; SameSite=Lax`;
         toast.success("Logged in successfully as Admin!");
-        router.push("/");
-        router.refresh();
+        window.location.href = "/";
         return;
       }
 
@@ -60,8 +59,7 @@ export default function LoginPage() {
       document.cookie = `aios_role=${userRole}; path=/; max-age=31536000; SameSite=Lax`;
 
       toast.success(`Logged in successfully as ${userRole}!`);
-      router.push("/");
-      router.refresh();
+      window.location.href = "/";
     } catch (err: any) {
       toast.error(err.message || "Invalid username or password.");
     } finally {
@@ -106,7 +104,7 @@ export default function LoginPage() {
                   <Input
                     id="username"
                     type="text"
-                    placeholder="admin"
+                    placeholder="Enter username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="pl-10 bg-white/50 border-slate-200 focus:border-blue-600 focus:ring-blue-600/10 text-slate-900 placeholder-slate-400"
@@ -122,7 +120,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="innovibe"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 bg-white/50 border-slate-200 focus:border-blue-600 focus:ring-blue-600/10 text-slate-900 placeholder-slate-400"

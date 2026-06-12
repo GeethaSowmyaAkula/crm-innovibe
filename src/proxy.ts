@@ -65,10 +65,11 @@ export async function proxy(request: NextRequest) {
     pathname.includes(".") ||
     pathname.startsWith("/favicon.ico");
 
+  const fallbackRole = request.cookies.get("aios_role")?.value;
+
   // Authentication & authorization redirect rules
   if (!user && !isAuthPage && !isApi && !isStatic) {
     // Fallback/bypass option: allow offline evaluation session cookie if present
-    const fallbackRole = request.cookies.get("aios_role")?.value;
     if (fallbackRole) {
       return response;
     }
@@ -78,8 +79,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect to home if logged in and trying to access login page
-  if (user && isAuthPage) {
+  // Redirect to home if logged in or has offline fallback role, and trying to access login page
+  if ((user || fallbackRole) && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
