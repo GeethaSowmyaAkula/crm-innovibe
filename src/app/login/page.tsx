@@ -162,26 +162,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Dynamic Background Effects */}
-      <div className="absolute top-0 left-0 -mr-40 w-96 h-96 rounded-full bg-blue-500/10 blur-3xl" />
-      <div className="absolute bottom-0 right-0 -ml-40 w-96 h-96 rounded-full bg-purple-500/10 blur-3xl" />
+      <div className="absolute top-0 left-0 -mr-40 w-96 h-96 rounded-full bg-blue-400/15 blur-3xl" />
+      <div className="absolute bottom-0 right-0 -ml-40 w-96 h-96 rounded-full bg-purple-400/15 blur-3xl" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <span className="text-white text-sm font-bold">IV</span>
           </div>
-          <span className="text-xl font-extrabold text-white tracking-tight">InnoVibe Care.EV</span>
+          <span className="text-xl font-extrabold text-slate-900 tracking-tight">InnoVibe Care.EV</span>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-white">
+        <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-slate-900">
           {isSignUp ? "Create your account" : "Sign in to AIOS"}
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
+        <p className="mt-2 text-center text-sm text-slate-500">
           Or{" "}
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="font-medium text-blue-400 hover:text-blue-300 focus:outline-none transition-colors"
+            className="font-medium text-blue-600 hover:text-blue-700 focus:outline-none transition-colors"
           >
             {isSignUp ? "sign in to your existing account" : "create a new account"}
           </button>
@@ -189,44 +189,44 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
-        <Card className="border border-slate-800 bg-slate-900/60 backdrop-blur-xl shadow-2xl text-white">
+        <Card className="border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-xl text-slate-900">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold tracking-wider text-slate-400 uppercase">
+            <CardTitle className="text-sm font-semibold tracking-wider text-slate-500 uppercase">
               {isSignUp ? "Registration Details" : "Credentials"}
             </CardTitle>
-            <CardDescription className="text-slate-500 text-xs">
+            <CardDescription className="text-slate-400 text-xs">
               Configure credentials to authenticate with the company operating system.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-slate-300">Email Address</Label>
+                <Label htmlFor="email" className="text-slate-700">Email Address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="name@innovibe.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-slate-950/50 border-slate-800 focus:border-blue-500 focus:ring-blue-500/20 text-white placeholder-slate-600"
+                    className="pl-10 bg-white/50 border-slate-200 focus:border-blue-600 focus:ring-blue-600/10 text-slate-900 placeholder-slate-400"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-slate-300">Password</Label>
+                <Label htmlFor="password" className="text-slate-700">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                  <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-slate-950/50 border-slate-800 focus:border-blue-500 focus:ring-blue-500/20 text-white placeholder-slate-600"
+                    className="pl-10 bg-white/50 border-slate-200 focus:border-blue-600 focus:ring-blue-600/10 text-slate-900 placeholder-slate-400"
                     required
                   />
                 </div>
@@ -234,17 +234,17 @@ export default function LoginPage() {
 
               {isSignUp && (
                 <div className="space-y-1.5 animate-fadeIn">
-                  <Label htmlFor="role" className="text-slate-300">Assign Corporate Role</Label>
+                  <Label htmlFor="role" className="text-slate-700">Assign Corporate Role</Label>
                   <div className="relative">
-                    <Shield className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                    <Shield className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                     <select
                       id="role"
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 bg-slate-950/50 border border-slate-800 rounded-md focus:border-blue-500 focus:ring-blue-500/20 text-white text-sm focus:outline-none appearance-none"
+                      className="w-full pl-10 pr-4 py-2 bg-white/50 border border-slate-200 rounded-md focus:border-blue-600 focus:ring-blue-600/10 text-slate-800 text-sm focus:outline-none appearance-none"
                     >
                       {roles.map((r) => (
-                        <option key={r} value={r} className="bg-slate-900 text-white">
+                        <option key={r} value={r} className="bg-white text-slate-800">
                           {r.replace("_", " ")}
                         </option>
                       ))}
@@ -271,9 +271,9 @@ export default function LoginPage() {
 
             <div className="relative my-4 flex items-center justify-center">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-800"></div>
+                <div className="w-full border-t border-slate-200"></div>
               </div>
-              <span className="relative px-3 bg-slate-900 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <span className="relative px-3 bg-white text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Evaluation Options
               </span>
             </div>
@@ -282,9 +282,9 @@ export default function LoginPage() {
             <button
               onClick={handleDemoLogin}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700/80 text-white py-2 px-4 rounded-md text-sm font-semibold border border-slate-700/60 hover:border-slate-600 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 px-4 rounded-md text-sm font-semibold border border-slate-200 transition-colors"
             >
-              <Sparkles className="h-4 w-4 text-amber-400" />
+              <Sparkles className="h-4 w-4 text-amber-500" />
               Bypass Auth / Demo CEO Mode
             </button>
           </CardContent>
