@@ -6,156 +6,64 @@ import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, ShieldCheck, Mail, Lock, Shield, ArrowRight, Sparkles } from "lucide-react";
+import { Loader2, Mail, Lock, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Form inputs
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CEO");
-
-  const roles = [
-    "CEO",
-    "Admin",
-    "Operations",
-    "Marketing",
-    "Finance",
-    "Technician",
-    "Garage_Manager",
-    "Fleet_Manager",
-    "Investor"
-  ];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please enter email and password.");
+    if (!username || !password) {
+      toast.error("Please enter username and password.");
       return;
     }
 
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        // Sign Up flow
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+      const normalizedUsername = username.trim().toLowerCase();
 
-        if (signUpError) throw signUpError;
-        if (!data.user) throw new Error("No user returned from sign up");
-
-        // Insert role mapping in user_roles table
-        const { error: roleError } = await supabase
-          .from("user_roles")
-          .insert({
-            id: data.user.id,
-            email: email,
-            role: role,
-          });
-
-        if (roleError) {
-          // If insert fails (e.g. table not initialized yet or permissions), let user know
-          console.error("Role mapping error:", roleError);
-          toast.warning("Signed up, but role assignment failed. Defaulting to CEO.");
-        }
-
-        // Set role cookie for client-side/SSR fallback
-        document.cookie = `aios_role=${role}; path=/; max-age=31536000; SameSite=Lax`;
-        
-        toast.success("Account created successfully! Logging in...");
+      // 1. Direct check for hardcoded admin / innovibe credentials
+      if (normalizedUsername === "admin" && password === "innovibe") {
+        document.cookie = `aios_role=CEO; path=/; max-age=31536000; SameSite=Lax`;
+        toast.success("Logged in successfully as Admin!");
         router.push("/");
         router.refresh();
-      } else {
-        // Sign In flow
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (signInError) throw signInError;
-
-        // Fetch role from user_roles
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("email", email)
-          .maybeSingle();
-
-        const userRole = roleData?.role || "CEO";
-        document.cookie = `aios_role=${userRole}; path=/; max-age=31536000; SameSite=Lax`;
-
-        toast.success(`Logged in successfully as ${userRole}!`);
-        router.push("/");
-        router.refresh();
+        return;
       }
-    } catch (err: any) {
-      toast.error(err.message || "An authentication error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  // Quick Demo Login helper to simplify grading and testing
-  async function handleDemoLogin() {
-    setLoading(true);
-    const demoEmail = "ceo@innovibe.in";
-    const demoPassword = "CeoPassword123!";
-
-    try {
-      // Try signing in
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: demoEmail,
-        password: demoPassword,
+      // 2. Fallback to standard Supabase authentication
+      const normalizedEmail = username.includes("@") ? username : `${username}@innovibe.in`;
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
       });
 
-      let finalRole = "CEO";
+      if (signInError) throw signInError;
 
-      if (signInError) {
-        // If demo user does not exist, attempt to sign up the demo user
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: demoEmail,
-          password: demoPassword,
-        });
+      // Fetch role from user_roles
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("email", normalizedEmail)
+        .maybeSingle();
 
-        if (signUpError) throw signUpError;
-        if (signUpData.user) {
-          // Insert role mapping for demo user
-          await supabase.from("user_roles").upsert({
-            id: signUpData.user.id,
-            email: demoEmail,
-            role: "CEO",
-          });
-        }
-      } else {
-        // Get user role
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("email", demoEmail)
-          .maybeSingle();
-        finalRole = roleData?.role || "CEO";
-      }
+      const userRole = roleData?.role || "CEO";
+      document.cookie = `aios_role=${userRole}; path=/; max-age=31536000; SameSite=Lax`;
 
-      document.cookie = `aios_role=${finalRole}; path=/; max-age=31536000; SameSite=Lax`;
-      toast.success("Demo session started as CEO.");
+      toast.success(`Logged in successfully as ${userRole}!`);
       router.push("/");
       router.refresh();
     } catch (err: any) {
-      // Fail-safe local fallback if Supabase auth service is not fully responsive
-      document.cookie = `aios_role=CEO; path=/; max-age=31536000; SameSite=Lax`;
-      toast.info("Supabase Auth offline. Started local offline CEO session.");
-      router.push("/");
-      router.refresh();
+      toast.error(err.message || "Invalid username or password.");
     } finally {
       setLoading(false);
     }
@@ -175,24 +83,15 @@ export default function LoginPage() {
           <span className="text-xl font-extrabold text-slate-900 tracking-tight">InnoVibe Care.EV</span>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-slate-900">
-          {isSignUp ? "Create your account" : "Sign in to AIOS"}
+          Sign in to AIOS
         </h2>
-        <p className="mt-2 text-center text-sm text-slate-500">
-          Or{" "}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="font-medium text-blue-600 hover:text-blue-700 focus:outline-none transition-colors"
-          >
-            {isSignUp ? "sign in to your existing account" : "create a new account"}
-          </button>
-        </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
         <Card className="border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-xl text-slate-900">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold tracking-wider text-slate-500 uppercase">
-              {isSignUp ? "Registration Details" : "Credentials"}
+              Credentials
             </CardTitle>
             <CardDescription className="text-slate-400 text-xs">
               Configure credentials to authenticate with the company operating system.
@@ -201,15 +100,15 @@ export default function LoginPage() {
           <CardContent className="space-y-6 pt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-slate-700">Email Address</Label>
+                <Label htmlFor="username" className="text-slate-700">Username</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="name@innovibe.in"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="username"
+                    type="text"
+                    placeholder="admin"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="pl-10 bg-white/50 border-slate-200 focus:border-blue-600 focus:ring-blue-600/10 text-slate-900 placeholder-slate-400"
                     required
                   />
@@ -223,7 +122,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="innovibe"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 bg-white/50 border-slate-200 focus:border-blue-600 focus:ring-blue-600/10 text-slate-900 placeholder-slate-400"
@@ -232,27 +131,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {isSignUp && (
-                <div className="space-y-1.5 animate-fadeIn">
-                  <Label htmlFor="role" className="text-slate-700">Assign Corporate Role</Label>
-                  <div className="relative">
-                    <Shield className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <select
-                      id="role"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 bg-white/50 border border-slate-200 rounded-md focus:border-blue-600 focus:ring-blue-600/10 text-slate-800 text-sm focus:outline-none appearance-none"
-                    >
-                      {roles.map((r) => (
-                        <option key={r} value={r} className="bg-white text-slate-800">
-                          {r.replace("_", " ")}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
@@ -260,33 +138,12 @@ export default function LoginPage() {
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isSignUp ? (
-                  "Create Account"
                 ) : (
                   "Sign In"
                 )}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </form>
-
-            <div className="relative my-4 flex items-center justify-center">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <span className="relative px-3 bg-white text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Evaluation Options
-              </span>
-            </div>
-
-            {/* Quick Demo Login */}
-            <button
-              onClick={handleDemoLogin}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 px-4 rounded-md text-sm font-semibold border border-slate-200 transition-colors"
-            >
-              <Sparkles className="h-4 w-4 text-amber-500" />
-              Bypass Auth / Demo CEO Mode
-            </button>
           </CardContent>
         </Card>
       </div>
