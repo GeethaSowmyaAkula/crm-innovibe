@@ -78,7 +78,7 @@ export default function LoginPage() {
           <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <span className="text-white text-sm font-bold">IV</span>
           </div>
-          <span className="text-xl font-extrabold text-slate-900 tracking-tight">InnoVibe Care.EV</span>
+          <span className="text-xl font-extrabold text-slate-900 tracking-tight">ICC</span>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-slate-900">
           Sign in to AIOS

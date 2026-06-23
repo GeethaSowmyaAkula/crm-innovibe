@@ -91,7 +91,7 @@ export default function OperationsCommandPage() {
         body: JSON.stringify({
           action: "trigger",
           playbookId,
-          triggeredBy: "CEO Cockpit"
+          triggeredBy: "CEO"
         })
       });
       const data = await res.json();

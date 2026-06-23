@@ -70,7 +70,7 @@ export class ContextEngine {
         }
         return {
           rootCause: "Frequent HTTP 504 timeouts on Laravel server during peak booking synchronization runs.",
-          impact: "Brief data inconsistency where new customer bookings do not resolve immediately in the CEO Cockpit.",
+          impact: "Brief data inconsistency where new customer bookings do not resolve immediately in the CEO.",
           suggestedAction: "Increase REST API timeout limits and schedule sync schedules during lower traffic periods."
         };
 

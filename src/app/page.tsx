@@ -454,7 +454,7 @@ export default async function CEOCockpitPage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">CEO Cockpit</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">CEO</h1>
           <p className="text-slate-500 text-sm">Real-time status monitoring, alerts, and strategic approvals for InnoVibe Mobility.</p>
         </div>
         <div className="flex items-center gap-3">
