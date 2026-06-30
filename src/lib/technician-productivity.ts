@@ -60,6 +60,22 @@ export interface FleetProductivitySummary {
   technicians: TechnicianMetric[];
 }
 
+// Internal type used during score computation
+interface RawMetric {
+  id: string;
+  name: string;
+  specialty: string | null;
+  status: string | null;
+  rating: number;
+  jobs_completed: number;
+  jobs_assigned: number;
+  jobs_pending: number;
+  jobs_cancelled: number;
+  revenue_generated: number;
+  completion_rate: number;
+  _rawCompletionRate: number;
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────────────────────────────────────
@@ -202,7 +218,7 @@ export async function getTechnicianProductivity(
   }
 
   // ── 4. Compute per-technician raw metrics ──────────────────────────────────
-  const rawMetrics = techData.map((tech: any) => {
+  const rawMetrics: RawMetric[] = techData.map((tech: any) => {
     let jobsAssigned: number;
     let jobsCompleted: number;
     let jobsPending: number;
