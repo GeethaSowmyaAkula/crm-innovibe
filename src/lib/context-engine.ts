@@ -158,6 +158,34 @@ export class ContextEngine {
           suggestedAction: "Trigger automated AMC renewal campaigns with special early-bird discounts."
         };
 
+      case "First-time Fix Rate":
+        if (isTargetMet) {
+          return {
+            rootCause: "High adherence to diagnostic checklist protocols and strict quality checks before vehicle dispatch.",
+            impact: "Reduces cost of repeat visits and builds high operational confidence.",
+            suggestedAction: "Publish the current checklists as mandatory training guidelines for new technicians."
+          };
+        }
+        return {
+          rootCause: `Increased repeat issues relating to motor diagnostics within 14 days of initial fixes.`,
+          impact: "Higher rework costs and localized customer frustration.",
+          suggestedAction: "Enforce diagnostic double-checks for all motor repairs and schedule refresher training."
+        };
+
+      case "Net Promoter Score (NPS)":
+        if (isTargetMet) {
+          return {
+            rootCause: "Proactive customer relationship campaigns and high resolution scores on WhatsApp follow-ups.",
+            impact: "Strong organic referral rates and lower customer acquisition costs.",
+            suggestedAction: "Target promoters with referral programs and early-bird subscription renewals."
+          };
+        }
+        return {
+          rootCause: "Extended turnaround delays and parts transit delays leading to high detractor counts.",
+          impact: "Negative word-of-mouth and risk of customer churn to local garages.",
+          suggestedAction: "Establish a priority resolution queue for dissatisfied clients and dispatch goodwill vouchers."
+        };
+
       default:
         return {
           rootCause: "Operational fluctuations and standard database changes.",

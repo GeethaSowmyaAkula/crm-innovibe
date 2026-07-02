@@ -179,10 +179,10 @@ export function CockpitTabs({
                           <p className="font-mono text-[9px] text-slate-400 mt-1 font-normal">{kpi.formula}</p>
                         </TableCell>
                         <TableCell className="text-center font-bold text-slate-900 text-xs align-top pt-3">
-                          {kpi.name.includes("Revenue") || kpi.name.includes("MRR") ? `₹${kpi.current_value.toLocaleString("en-IN")}` : kpi.name.includes("Turnaround") ? `${kpi.current_value} hrs` : kpi.name.includes("Satisfaction") || kpi.name.includes("CSAT") ? `${kpi.current_value} / 5` : kpi.name.includes("Productivity") ? `${kpi.current_value} / 100` : `${kpi.current_value}%`}
+                          {kpi.name.includes("Revenue") || kpi.name.includes("MRR") ? `₹${kpi.current_value.toLocaleString("en-IN")}` : kpi.name.includes("Turnaround") ? `${kpi.current_value} hrs` : kpi.name.includes("Satisfaction") || kpi.name.includes("CSAT") ? `${kpi.current_value} / 5` : kpi.name.includes("Productivity") ? `${kpi.current_value} / 100` : kpi.name.includes("NPS") ? (kpi.current_value > 0 ? `+${kpi.current_value}` : kpi.current_value) : `${kpi.current_value}%`}
                         </TableCell>
                         <TableCell className="text-center font-semibold text-slate-500 text-xs align-top pt-3">
-                          {kpi.name.includes("Revenue") || kpi.name.includes("MRR") ? `₹${kpi.target.toLocaleString("en-IN")}` : kpi.name.includes("Turnaround") ? `${kpi.target} hrs` : kpi.name.includes("Satisfaction") || kpi.name.includes("CSAT") ? `${kpi.target} / 5` : kpi.name.includes("Productivity") ? `${kpi.target} / 100` : `${kpi.target}%`}
+                          {kpi.name.includes("Revenue") || kpi.name.includes("MRR") ? `₹${kpi.target.toLocaleString("en-IN")}` : kpi.name.includes("Turnaround") ? `${kpi.target} hrs` : kpi.name.includes("Satisfaction") || kpi.name.includes("CSAT") ? `${kpi.target} / 5` : kpi.name.includes("Productivity") ? `${kpi.target} / 100` : kpi.name.includes("NPS") ? (kpi.target > 0 ? `+${kpi.target}` : kpi.target) : `${kpi.target}%`}
                         </TableCell>
                         <TableCell className="text-center align-top pt-2">
                           <Badge 
