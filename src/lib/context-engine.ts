@@ -46,7 +46,7 @@ export class ContextEngine {
           suggestedAction: "Onboard local authorized service centers to increase booking fulfillment and load balancing."
         };
 
-      case "Customer Satisfaction":
+      case "Customer Satisfaction (CSAT)":
         if (isTargetMet) {
           return {
             rootCause: "Excellent response times and high resolution rates for Pune fleet dispatch.",
@@ -74,7 +74,7 @@ export class ContextEngine {
           suggestedAction: "Increase REST API timeout limits and schedule sync schedules during lower traffic periods."
         };
 
-      case "AMC Subscription Rate":
+      case "AMC Conversion Rate":
         if (isTargetMet) {
           return {
             rootCause: "Effective checkout upsell prompting by service center technicians.",
@@ -86,6 +86,104 @@ export class ContextEngine {
           rootCause: "Lack of automated customer renewal notices and low penetration among out-of-warranty individual vehicle owners.",
           impact: "Loss of lucrative post-warranty spare parts and servicing revenue streams.",
           suggestedAction: "Trigger the Out-of-Warranty Auto WhatsApp reminder sequence via the Command Center."
+        };
+
+      case "Average Service Turnaround Time":
+        if (currentValue <= target) { // For time, lower is better
+          return {
+            rootCause: "Optimized garage bay allocations and real-time technician workload balancing.",
+            impact: "High customer satisfaction and increased booking throughput per hub.",
+            suggestedAction: "Maintain current slot scheduling rules and document best practices for new partner garages."
+          };
+        }
+        return {
+          rootCause: `Delays in parts dispatch and technician scheduling conflicts in high-density areas.`,
+          impact: "Customer vehicle downtime exceeded targets by average of 1.2 hours.",
+          suggestedAction: "Implement predictive parts pre-stocking based on scheduled maintenance calendars."
+        };
+
+      case "Repeat Customer Rate":
+        if (isTargetMet) {
+          return {
+            rootCause: "Strong post-service customer success follow-ups and high-quality first-time fixes.",
+            impact: "Reduced customer acquisition costs and built a highly loyal EV owner cohort.",
+            suggestedAction: "Implement a tiered referral program to leverage this highly satisfied base."
+          };
+        }
+        return {
+          rootCause: "Limited marketing touchpoints after initial booking and absence of structured loyalty incentives.",
+          impact: "Increased customer acquisition costs as users try alternative local providers.",
+          suggestedAction: "Automate a 90-day post-service follow-up campaign offering special health check coupons."
+        };
+
+      case "Membership Conversion Rate":
+        if (isTargetMet) {
+          return {
+            rootCause: "Highly competitive membership pricing and compelling bundle benefits.",
+            impact: "Predictable recurring fee streams and improved ecosystem retention.",
+            suggestedAction: "Expand membership benefits to include smart charging partner discounts."
+          };
+        }
+        return {
+          rootCause: "Low user awareness of the membership plan advantages during checkout.",
+          impact: "Missed high-margin subscription revenue from regular EV commuters.",
+          suggestedAction: "Add a membership upsell prompt in the booking flow showing direct cost savings."
+        };
+
+      case "Technician Productivity":
+        if (isTargetMet) {
+          return {
+            rootCause: "Efficient routing from dispatch systems and positive resolution of skill mismatches.",
+            impact: "Higher daily job completion rates and optimal labor utilization.",
+            suggestedAction: "Roll out performance-based bonuses to the top 25% of technicians."
+          };
+        }
+        return {
+          rootCause: "High travel times between customer sites and outdated route navigation patterns.",
+          impact: "Lower daily technician utilization rate, increasing operational cost per booking.",
+          suggestedAction: "Implement real-time geographic zone routing to group bookings by technician location."
+        };
+
+      case "Monthly Recurring Revenue (MRR)":
+        if (isTargetMet) {
+          return {
+            rootCause: "Consistent growth in active AMC subscriptions and premium membership plan enrollments.",
+            impact: "Provides a reliable baseline revenue of ₹25,000+ per month, shielding from seasonal dip risk.",
+            suggestedAction: "Invest a portion of recurring revenue into expanding diagnostic tool software."
+          };
+        }
+        return {
+          rootCause: `Higher than expected churn of AMC renewals and low initial membership uptake.`,
+          impact: "Strains corporate cash flow projections and increases break-even targets.",
+          suggestedAction: "Trigger automated AMC renewal campaigns with special early-bird discounts."
+        };
+
+      case "First-time Fix Rate":
+        if (isTargetMet) {
+          return {
+            rootCause: "High adherence to diagnostic checklist protocols and strict quality checks before vehicle dispatch.",
+            impact: "Reduces cost of repeat visits and builds high operational confidence.",
+            suggestedAction: "Publish the current checklists as mandatory training guidelines for new technicians."
+          };
+        }
+        return {
+          rootCause: `Increased repeat issues relating to motor diagnostics within 14 days of initial fixes.`,
+          impact: "Higher rework costs and localized customer frustration.",
+          suggestedAction: "Enforce diagnostic double-checks for all motor repairs and schedule refresher training."
+        };
+
+      case "Net Promoter Score (NPS)":
+        if (isTargetMet) {
+          return {
+            rootCause: "Proactive customer relationship campaigns and high resolution scores on WhatsApp follow-ups.",
+            impact: "Strong organic referral rates and lower customer acquisition costs.",
+            suggestedAction: "Target promoters with referral programs and early-bird subscription renewals."
+          };
+        }
+        return {
+          rootCause: "Extended turnaround delays and parts transit delays leading to high detractor counts.",
+          impact: "Negative word-of-mouth and risk of customer churn to local garages.",
+          suggestedAction: "Establish a priority resolution queue for dissatisfied clients and dispatch goodwill vouchers."
         };
 
       default:
