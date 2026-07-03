@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Car, ShieldCheck, Megaphone,
   Settings, CreditCard, BarChart3, TrendingUp, UserCog,
   MapPin, Cpu, ShieldAlert, FileText, Target, BookOpen,
-  Zap, Users, MessageSquare, BellRing, ChevronRight, ChevronLeft, Building, Database
+  Zap, Users, MessageSquare, BellRing, ChevronRight, ChevronLeft, Building, Database, UserPlus
 } from "lucide-react";
 
 const sections = [
@@ -20,6 +20,7 @@ const sections = [
       { name: "TMS & HRMS", href: "https://office.innovibemobility.com/login", icon: Building },
       { name: "WhatsApp", href: "https://evdiagnostic.innovibemobility.com/dashboard/?tab=users", icon: MessageSquare },
       { name: "ERP", href: "/erp", icon: Database },
+      { name: "Leads", href: "https://script.google.com/macros/s/AKfycbxGTJf3R74_6N21f_RhihHhzrJougKK12bUEKccQdF18iCJ-tCnt8KimORlyppzhqFY/exec", icon: UserPlus },
     ],
   },
   {
@@ -42,7 +43,6 @@ const sections = [
   {
     title: "Revenue",
     items: [
-      { name: "Leads", href: "/leads", icon: TrendingUp },
       { name: "AMC Contracts", href: "/amc", icon: ShieldCheck },
       { name: "Payments", href: "/transactions", icon: CreditCard },
       { name: "Revenue Health", href: "/sales", icon: BarChart3 },
@@ -132,6 +132,7 @@ export function Sidebar() {
             <div className="space-y-0.5">
               {section.items.map((item) => {
                 const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+                const isExternal = item.href.startsWith("http");
                 return (
                   <Link
                     key={item.name}
@@ -141,6 +142,8 @@ export function Sidebar() {
                       isActive && "active",
                       activeCollapse && "justify-center px-0"
                     )}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
                   >
                     <item.icon
                       className={cn(
