@@ -20,7 +20,7 @@ const sections = [
       { name: "TMS & HRMS", href: "https://office.innovibemobility.com/login", icon: Building },
       { name: "WhatsApp", href: "https://evdiagnostic.innovibemobility.com/dashboard/?tab=users", icon: MessageSquare },
       { name: "ERP", href: "/erp", icon: Database },
-      { name: "Leads", href: "https://script.google.com/macros/s/AKfycbxGTJf3R74_6N21f_RhihHhzrJougKK12bUEKccQdF18iCJ-tCnt8KimORlyppzhqFY/exec", icon: UserPlus },
+      { name: "Leads", href: "https://google-maps-lead-gen-production-e3d6.up.railway.app", icon: UserPlus },
     ],
   },
   {
