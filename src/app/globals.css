@@ -326,9 +326,9 @@
   }
 
   .crm-stat-card:hover {
-    border-color: #000000;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    border-color: #0070F3 !important;
+    transform: translateY(-3px) scale(1.015);
+    box-shadow: 0 12px 24px -4px rgba(0, 112, 243, 0.08), 0 0 0 1px rgba(0, 112, 243, 0.05);
   }
 
   .crm-stat-icon {
@@ -378,7 +378,7 @@
 
   .crm-table tbody tr {
     @apply border-b border-slate-200;
-    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease;
   }
 
   .crm-table tbody tr:last-child {
@@ -386,7 +386,9 @@
   }
 
   .crm-table tbody tr:hover {
-    background-color: #FAFAFA;
+    background-color: #FAFAFA !important;
+    transform: scale(1.002) translateX(3px);
+    box-shadow: inset 3px 0 0 0 #0070F3, 0 4px 12px rgba(0, 0, 0, 0.02) !important;
   }
 
   .crm-table td {
