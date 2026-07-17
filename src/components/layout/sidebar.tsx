@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Car, ShieldCheck, Megaphone,
   Settings, CreditCard, BarChart3, TrendingUp, UserCog,
   MapPin, Cpu, ShieldAlert, FileText, Target, BookOpen,
-  Zap, Users, MessageSquare, BellRing, ChevronRight, ChevronLeft, Building, Database, UserPlus
+  Zap, Users, MessageSquare, BellRing, ChevronRight, ChevronLeft, Building, Database, UserPlus, Handshake
 } from "lucide-react";
 
 const sections = [
@@ -30,6 +30,12 @@ const sections = [
       { name: "Bookings", href: "/bookings", icon: BellRing },
       { name: "Complaints", href: "/complaints", icon: MessageSquare },
       { name: "Feedback", href: "/feedback", icon: MessageSquare },
+    ],
+  },
+  {
+    title: "Partnerships",
+    items: [
+      { name: "Partnership Tracker", href: "/partnerships", icon: Handshake },
     ],
   },
   {
@@ -87,49 +93,59 @@ export function Sidebar() {
     localStorage.setItem("sidebar_collapsed", String(newValue));
   };
 
-  // Avoid layout shift during server-side rendering
   const activeCollapse = mounted ? isCollapsed : false;
 
   return (
     <div 
       className={cn(
-        "flex h-full flex-col bg-white border-r border-slate-200 shrink-0 transition-all duration-300 ease-in-out",
-        activeCollapse ? "w-16" : "w-60"
+        "flex h-full flex-col bg-white border-r border-slate-200/60 shrink-0 transition-all duration-300 ease-in-out relative z-30 shadow-[4px_0_24px_-10px_rgba(0,0,0,0.03)]",
+        activeCollapse ? "w-16" : "w-64"
       )}
     >
-      {/* Logo */}
+      {/* Brand Header */}
       <div 
         className={cn(
-          "flex h-14 shrink-0 items-center border-b border-slate-200 gap-3 overflow-hidden",
-          activeCollapse ? "px-0 justify-center" : "px-4 justify-start"
+          "flex h-16 shrink-0 items-center border-b border-slate-100/80 gap-3 px-4 justify-between",
+          activeCollapse && "justify-center px-0"
         )}
       >
-        <div
-          className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 text-white text-xs font-bold shadow-sm"
-          style={{ background: "linear-gradient(135deg, #1D4ED8, #3B82F6)" }}
-        >
-          IV
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 text-white text-sm font-extrabold shadow-md shadow-blue-500/10"
+            style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
+          >
+            IV
+          </div>
+          {!activeCollapse && (
+            <div className="animate-fade-in min-w-0">
+              <p className="text-sm font-black text-slate-900 tracking-tight leading-none">ICC</p>
+              <p className="text-[10px] text-blue-600 font-extrabold uppercase tracking-widest mt-1">Integrated Command Center</p>
+            </div>
+          )}
         </div>
         {!activeCollapse && (
-          <div className="animate-fade-in">
-            <p className="text-[13px] font-bold text-slate-900 leading-tight">ICC</p>
-            <p className="text-[10px] text-blue-600 font-medium">Integrated Command Center</p>
-          </div>
+          <button
+            onClick={handleToggleCollapse}
+            className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-650 hover:bg-slate-50 border border-slate-100 transition-all duration-200 shadow-sm"
+            title="Collapse Menu"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
         )}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
+      {/* Navigation Links */}
+      <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5">
         {sections.map((section) => (
-          <div key={section.title}>
+          <div key={section.title} className="space-y-1.5">
             {activeCollapse ? (
-              <div className="border-t border-slate-100 my-2 mx-1" />
+              <div className="border-t border-slate-100/80 my-3 mx-1" />
             ) : (
-              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400 truncate">
+              <p className="px-3 text-[10px] font-black uppercase tracking-wider text-slate-550 truncate">
                 {section.title}
               </p>
             )}
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {section.items.map((item) => {
                 const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
                 const isExternal = item.href.startsWith("http");
@@ -138,8 +154,9 @@ export function Sidebar() {
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "sidebar-nav-item group relative",
-                      isActive && "active",
+                      "sidebar-nav-item group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 font-semibold transition-all duration-200",
+                      isActive && "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-600/10 font-bold active-pill-strip",
+                      !isActive && "hover:bg-slate-50/70 hover:text-slate-900",
                       activeCollapse && "justify-center px-0"
                     )}
                     target={isExternal ? "_blank" : undefined}
@@ -147,20 +164,20 @@ export function Sidebar() {
                   >
                     <item.icon
                       className={cn(
-                        "h-4 w-4 shrink-0 transition-colors",
-                        isActive ? "text-blue-600" : "text-slate-400"
+                        "h-4.5 w-4.5 shrink-0 transition-colors duration-200",
+                        isActive ? "text-white" : "text-slate-400 group-hover:text-blue-600"
                       )}
                     />
                     {!activeCollapse && (
-                      <span className="flex-1 text-[13px] truncate">{item.name}</span>
+                      <span className="flex-1 text-[13px] truncate tracking-tight">{item.name}</span>
                     )}
                     {isActive && !activeCollapse && (
-                      <ChevronRight className="h-3 w-3 text-blue-400 shrink-0" />
+                      <ChevronRight className="h-3.5 w-3.5 text-white/80 shrink-0" />
                     )}
 
-                    {/* Tooltip when collapsed */}
+                    {/* Popover Tooltip when collapsed */}
                     {activeCollapse && (
-                      <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] rounded-md shadow-lg whitespace-nowrap hidden group-hover:block pointer-events-none z-50">
+                      <div className="absolute left-full ml-3 px-3 py-2 bg-slate-900 text-white text-[11px] font-bold rounded-lg shadow-xl whitespace-nowrap hidden group-hover:block pointer-events-none z-50">
                         {item.name}
                       </div>
                     )}
@@ -172,45 +189,37 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer / Toggle */}
-      <div className="px-3 py-3 border-t border-slate-200 bg-slate-50/50">
+      {/* Profile Section & Toggle */}
+      <div className="p-3 border-t border-slate-100 bg-slate-50/30 shrink-0">
         <div className="flex flex-col gap-3">
           {!activeCollapse ? (
-            <div className="flex items-center justify-between gap-2.5">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="h-7 w-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+            <div className="flex items-center justify-between gap-2.5 p-1 bg-white border border-slate-100 rounded-xl shadow-sm">
+              <div className="flex items-center gap-2.5 min-w-0 p-1">
+                <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-black shadow-sm shrink-0">
                   A
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-semibold text-slate-800 truncate">Admin User</p>
-                  <div className="flex items-center gap-1.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <p className="text-[10px] text-slate-500 truncate">Live · innovibemobility.com</p>
+                  <p className="text-[12px] font-extrabold text-slate-800 truncate">Admin User</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <p className="text-[9px] font-bold text-slate-500 tracking-tight truncate">Live Dashboard</p>
                   </div>
                 </div>
               </div>
-              <button
-                onClick={handleToggleCollapse}
-                className="h-7 w-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
-                title="Collapse Sidebar"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
             </div>
           ) : (
             <div className="flex flex-col items-center w-full gap-3">
               <div 
-                className="h-7 w-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0 relative group cursor-default"
+                className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-black shadow-sm shrink-0 relative group cursor-default"
               >
                 A
-                {/* Tooltip for avatar when collapsed */}
-                <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] rounded-md shadow-lg whitespace-nowrap hidden group-hover:block pointer-events-none z-50">
-                  Admin User (Live)
+                <div className="absolute left-full ml-4 px-3 py-2 bg-slate-900 text-white text-[11px] font-bold rounded-lg shadow-xl whitespace-nowrap hidden group-hover:block pointer-events-none z-50">
+                  Admin User (System Active)
                 </div>
               </div>
               <button
                 onClick={handleToggleCollapse}
-                className="h-7 w-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-colors"
+                className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
                 title="Expand Sidebar"
               >
                 <ChevronRight className="h-4 w-4" />

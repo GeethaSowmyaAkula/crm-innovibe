@@ -8,8 +8,8 @@ export function Topbar() {
   const [userOpen, setUserOpen] = useState(false);
 
   return (
-    <div className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-6"
-      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
+    <div className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-x-4 border-b border-slate-100 bg-white px-6"
+      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}
     >
       {/* Search */}
       <div className="flex flex-1">
@@ -36,11 +36,12 @@ export function Topbar() {
             <Bell className="h-4 w-4" />
             {/* unread dot */}
             <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 top-10 w-80 bg-white border border-slate-200 rounded-lg shadow-lg z-50 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+            <div className="absolute right-0 top-10 w-80 bg-white border border-slate-100 rounded-lg shadow-lg z-50 overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-50 bg-slate-50/30">
                 <span className="text-[13px] font-semibold text-slate-800">Notifications</span>
                 <span className="text-[11px] text-blue-600 cursor-pointer hover:underline">Mark all read</span>
               </div>
@@ -68,7 +69,7 @@ export function Topbar() {
         </div>
 
         {/* Divider */}
-        <div className="h-5 w-px bg-slate-200" />
+        <div className="h-5 w-px bg-slate-100" />
 
         {/* User Menu */}
         <div className="relative">
@@ -84,8 +85,8 @@ export function Topbar() {
           </button>
 
           {userOpen && (
-            <div className="absolute right-0 top-10 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50 overflow-hidden">
-              <div className="px-4 py-3 border-b border-slate-100">
+            <div className="absolute right-0 top-10 w-48 bg-white border border-slate-100 rounded-lg shadow-lg z-50 overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-50">
                 <p className="text-[13px] font-semibold text-slate-800">Admin User</p>
                 <p className="text-[11px] text-slate-500">admin@innovibemobility.com</p>
               </div>

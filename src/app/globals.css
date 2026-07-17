@@ -1,20 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* ═══════════════════════════════════════════════════
-   INNOVIBE AIOS — DESIGN SYSTEM v3
-   Zoho CRM-inspired · Light Blue Tinted · Professional
-═══════════════════════════════════════════════════ */
+   INNOVIBE ICC — PREMIUM LIGHT ENTERPRISE SYSTEM v8
+   Vercel Obsidian Theme · Pure Alabaster Backdrop & Jet Black Highlights
+   Sleek carbon borders, high-contrast layouts, glowing electric blue accents
+   ═══════════════════════════════════════════════════ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -44,6 +45,42 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Blue Namespace Remapping (Now resolved to Vercel's signature Electric Blue) */
+  --color-blue-50:  rgba(0, 112, 243, 0.06);   /* subtle blue tint */
+  --color-blue-100: rgba(0, 112, 243, 0.12);
+  --color-blue-200: #3291FF;
+  --color-blue-300: #3291FF;
+  --color-blue-400: #0070F3;
+  --color-blue-500: #0070F3;   /* Electric Blue */
+  --color-blue-600: #0070F3;   /* Vercel Electric Blue brand */
+  --color-blue-700: #0051B3;
+  --color-blue-800: #00408A;
+  --color-blue-900: #002E66;
+  --color-blue-950: #001733;
+
+  /* Red Namespace Remapping (Danger / Alerts - Google style soft danger) */
+  --color-red-50:  #FCE8E6;
+  --color-red-100: #FAD2CF;
+  --color-red-500: #EA4335;
+  --color-red-600: #C5221F;
+  --color-red-700: #A50E0C;
+
+  /* Green Namespace Remapping (Success / Live states - Google style soft success) */
+  --color-green-50:  #E6F4EA;
+  --color-green-100: #CEEAD6;
+  --color-green-500: #34A853;
+  --color-green-600: #137333;
+  --color-green-700: #0B6623;
+
+  /* Yellow / Amber (Warnings - Google style soft warning) */
+  --color-amber-50:  #FEF7E0;
+  --color-amber-100: #FEEFC3;
+  --color-amber-500: #FBBC04;
+  --color-amber-600: #B06000;
+  --color-amber-700: #8F4B00;
+
+  /* Remapping radius settings for nested premium curves */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -52,84 +89,78 @@
 }
 
 :root {
-  /* ─── Core Brand Blue ─── */
-  --crm-blue-50:  #EFF6FF;
-  --crm-blue-100: #DBEAFE;
-  --crm-blue-200: #BFDBFE;
-  --crm-blue-500: #3B82F6;
-  --crm-blue-600: #2563EB;
-  --crm-blue-700: #1D4ED8;
-  --crm-blue-900: #1E3A8A;
+  /* ─── Vercel Electric Blue Accent ─── */
+  --crm-blue-50:  rgba(0, 112, 243, 0.06);
+  --crm-blue-100: rgba(0, 112, 243, 0.12);
+  --crm-blue-200: #3291FF;
+  --crm-blue-500: #0070F3;
+  --crm-blue-600: #0070F3;   /* Electric Blue */
+  --crm-blue-700: #0051B3;
+  --crm-blue-900: #002E66;
 
-  /* ─── Surface & Background ─── */
-  --background:         #F0F4FF;   /* subtle blue-tinted page bg */
-  --surface:            #FFFFFF;   /* card / panel surface */
-  --surface-hover:      #F5F8FF;   /* row / item hover */
-  --surface-active:     #EFF6FF;   /* selected state */
+  /* ─── Pristine Light Surfaces & Backdrops ─── */
+  --background:         #FAFAFA;   /* Pure Alabaster */
+  --surface:            #FFFFFF;   /* pure white panel surface */
+  --surface-hover:      #FAFAFA;   /* item hover */
+  --surface-active:     #F1F1F1;   /* selected / active state */
 
-  /* ─── Foreground / Text ─── */
-  --foreground:         #0F172A;   /* primary text */
-  --text-secondary:     #475569;   /* secondary text */
-  --text-muted:         #94A3B8;   /* placeholder / hint */
+  /* ─── Typography / Slate Grays ─── */
+  --foreground:         #000000;   /* High-contrast Jet Black */
+  --text-secondary:     #333333;   /* Carbon gray */
+  --text-muted:         #666666;   /* Slate gray */
 
-  /* ─── Borders ─── */
-  --border:             #E2E8F0;
-  --border-blue:        #BFDBFE;
-  --border-focus:       #3B82F6;
+  /* ─── Sophisticated Thin Borders ─── */
+  --border:             #EAEAEA;   /* Clean carbon border */
+  --border-blue:        #3291FF;
+  --border-focus:       #0070F3;
 
-  /* ─── Semantic Colors ─── */
-  --success:    #059669;
-  --success-bg: #ECFDF5;
-  --warning:    #D97706;
-  --warning-bg: #FFFBEB;
-  --danger:     #DC2626;
-  --danger-bg:  #FEF2F2;
-  --info:       #0284C7;
-  --info-bg:    #F0F9FF;
+  /* ─── Soft Light Semantic Colors ─── */
+  --success:    #137333;
+  --success-bg: #E6F4EA;
+  --warning:    #B06000;
+  --warning-bg: #FEF7E0;
+  --danger:     #C5221F;
+  --danger-bg:  #FCE8E6;
+  --info:       #0070F3;
+  --info-bg:    rgba(0, 112, 243, 0.06);
 
-  /* ─── ShadCN Token Mapping ─── */
+  /* ─── ShadCN Design System Token Mapping ─── */
   --card:                 #FFFFFF;
-  --card-foreground:      #0F172A;
+  --card-foreground:      #000000;
   --popover:              #FFFFFF;
-  --popover-foreground:   #0F172A;
-  --primary:              #2563EB;
+  --popover-foreground:   #000000;
+  --primary:              #000000;
   --primary-foreground:   #FFFFFF;
-  --secondary:            #F0F4FF;
-  --secondary-foreground: #1D4ED8;
-  --muted:                #F1F5F9;
-  --muted-foreground:     #64748B;
-  --accent:               #EFF6FF;
-  --accent-foreground:    #1D4ED8;
-  --destructive:          #DC2626;
-  --input:                #E2E8F0;
-  --ring:                 #3B82F6;
+  --secondary:            #FAFAFA;
+  --secondary-foreground: #000000;
+  --muted:                #FAFAFA;
+  --muted-foreground:     #666666;
+  --accent:               #FAFAFA;
+  --accent-foreground:    #000000;
+  --destructive:          #C5221F;
+  --input:                #EAEAEA;
+  --ring:                 #0070F3;
   --radius:               0.5rem;
-
-  /* ─── Charts ─── */
-  --chart-1: #3B82F6;
-  --chart-2: #06B6D4;
-  --chart-3: #8B5CF6;
-  --chart-4: #10B981;
-  --chart-5: #F59E0B;
 
   /* ─── Sidebar ─── */
   --sidebar:                    #FFFFFF;
-  --sidebar-foreground:         #0F172A;
-  --sidebar-primary:            #2563EB;
+  --sidebar-foreground:         #444444;
+  --sidebar-primary:            #000000;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent:             #EFF6FF;
-  --sidebar-accent-foreground:  #1D4ED8;
-  --sidebar-border:             #E2E8F0;
-  --sidebar-ring:               #3B82F6;
+  --sidebar-accent:             #FAFAFA;
+  --sidebar-accent-foreground:  #000000;
+  --sidebar-border:             #EAEAEA;
+  --sidebar-ring:               #0070F3;
 }
 
 /* ═══════════════════════════════════════
    BASE RESET & TYPOGRAPHY
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
     box-sizing: border-box;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
   html {
@@ -137,30 +168,36 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    background-color: var(--background);
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
     font-size: 13px;
     line-height: 1.5;
   }
 
-  h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #0F172A; }
-  h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: #0F172A; }
-  h3 { font-size: 14px; font-weight: 600; color: #0F172A; }
-  h4 { font-size: 13px; font-weight: 600; color: #1E293B; }
-  p  { color: #475569; }
+  h1, h2, h3, h4 {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  }
 
-  /* Scrollbar */
+  h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; color: #000000 !important; }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: #111111 !important; }
+  h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: #222222 !important; }
+  h4 { font-size: 14px; font-weight: 600; color: #333333 !important; }
+  p  { color: #666666 !important; }
+
+  /* Premium Slim Scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+  ::-webkit-scrollbar-thumb { background: #EAEAEA; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #D0D0D0; }
 
-  /* Focus rings */
+  /* Modern focus outline */
   *:focus-visible {
-    outline: 2px solid #3B82F6;
+    outline: 2px solid var(--crm-blue-500);
     outline-offset: 2px;
   }
 
@@ -168,102 +205,161 @@
     font-family: inherit;
     font-size: 13px;
   }
+
+  /* ─── Base Class-level Clean Light Overrides ─── */
+  .bg-white {
+    background-color: #FFFFFF !important;
+  }
+  .bg-slate-50 {
+    background-color: #FAFAFA !important;
+  }
+  .bg-slate-100 {
+    background-color: #FAFAFA !important;
+  }
+  .bg-slate-200 {
+    background-color: #EAEAEA !important;
+  }
+
+  .text-slate-900 {
+    color: #000000 !important;
+  }
+  .text-slate-800 {
+    color: #111111 !important;
+  }
+  .text-slate-700 {
+    color: #222222 !important;
+  }
+  .text-slate-600 {
+    color: #333333 !important;
+  }
+  .text-slate-500 {
+    color: #666666 !important;
+  }
+  .text-slate-400 {
+    color: #888888 !important;
+  }
+
+  .border-slate-100 {
+    border-color: #FAFAFA !important;
+  }
+  .border-slate-200 {
+    border-color: #EAEAEA !important;
+  }
+  .border-slate-300 {
+    border-color: #D0D0D0 !important;
+  }
 }
 
 /* ═══════════════════════════════════════
    CRM LAYOUT PRIMITIVES
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 @layer components {
 
-  /* ── Page Shell ── */
   .crm-page {
     @apply flex flex-col h-full;
     background: var(--background);
   }
 
-  /* ── Page Header (toolbar) ── */
+  /* Toolbar styling */
   .crm-toolbar {
-    @apply flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200;
-    min-height: 60px;
+    @apply flex items-center justify-between px-8 py-5 border-b border-slate-200;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    min-height: 64px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   }
 
   .crm-toolbar-title {
-    @apply text-[17px] font-semibold text-slate-900;
+    @apply text-[18px] font-bold text-slate-900 tracking-tight;
   }
 
   .crm-toolbar-actions {
-    @apply flex items-center gap-2;
+    @apply flex items-center gap-3;
   }
 
-  /* ── Filter Bar ── */
+  /* Filter bar component */
   .crm-filter-bar {
-    @apply flex items-center gap-3 px-6 py-3 bg-white border-b border-slate-200;
+    @apply flex items-center gap-4 px-8 py-4 border-b border-slate-200;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
   }
 
-  /* ── Page Body ── */
   .crm-body {
-    @apply flex-1 overflow-y-auto px-6 py-5;
+    @apply flex-1 overflow-y-auto px-8 py-6;
   }
 
   /* ═══════════════════════════════════════
-     CARDS
-  ═══════════════════════════════════════ */
+     CARDS (Apple/Stripe/Linear vibes)
+     ═══════════════════════════════════════ */
   .crm-card {
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid #EAEAEA;
     border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
     overflow: hidden;
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.22s ease;
+  }
+
+  .crm-card:hover {
+    border-color: #000000;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    transform: translateY(-0.5px);
   }
 
   .crm-card-header {
-    @apply flex items-center justify-between px-5 py-4 border-b border-slate-100;
+    @apply flex items-center justify-between px-6 py-4.5 border-b border-slate-100 bg-slate-50/20;
   }
 
   .crm-card-title {
-    @apply text-[13px] font-semibold text-slate-800;
+    @apply text-[13px] font-bold text-slate-800 tracking-tight uppercase;
   }
 
   .crm-card-body {
-    @apply p-5;
+    @apply p-6;
   }
 
-  /* ── Stat Card ── */
+  /* ── Stat Card (Stripe Dashboard style) ── */
   .crm-stat-card {
-    @apply bg-white border border-slate-200 rounded-lg p-5 flex items-start gap-4;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    @apply bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-4;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.01);
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.22s ease, box-shadow 0.22s ease;
   }
 
   .crm-stat-card:hover {
-    border-color: var(--crm-blue-200);
-    box-shadow: 0 1px 8px rgba(37, 99, 235, 0.08);
+    border-color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04);
   }
 
   .crm-stat-icon {
-    @apply h-10 w-10 rounded-lg flex items-center justify-center shrink-0;
-    background: var(--crm-blue-50);
+    @apply h-11 w-11 rounded-lg flex items-center justify-center shrink-0;
+    background: #FAFAFA;
+    color: #000000;
+    border: 1px solid #EAEAEA;
   }
 
   .crm-stat-label {
-    @apply text-[11px] font-semibold uppercase tracking-wider text-slate-500;
+    @apply text-[10px] font-bold uppercase tracking-widest text-slate-400;
   }
 
   .crm-stat-value {
-    @apply text-2xl font-bold text-slate-900 leading-none mt-1;
+    @apply text-2xl font-extrabold text-slate-900 leading-none mt-1.5 tracking-tight font-heading;
   }
 
   .crm-stat-delta-up {
-    @apply text-[11px] font-semibold text-emerald-600 flex items-center gap-0.5 mt-1;
+    @apply text-[11px] font-bold text-emerald-600 flex items-center gap-0.5 mt-1.5 bg-emerald-50 px-2 py-0.5 rounded-md w-fit border border-emerald-100/55;
   }
 
   .crm-stat-delta-down {
-    @apply text-[11px] font-semibold text-red-500 flex items-center gap-0.5 mt-1;
+    @apply text-[11px] font-bold text-red-600 flex items-center gap-0.5 mt-1.5 bg-red-50 px-2 py-0.5 rounded-md w-fit border border-red-100/55;
   }
 
   /* ═══════════════════════════════════════
-     DATA TABLE
-  ═══════════════════════════════════════ */
+     DATA TABLES
+     ═══════════════════════════════════════ */
   .crm-table-wrapper {
-    @apply bg-white border border-slate-200 rounded-lg overflow-hidden;
+    @apply bg-white border border-slate-200 rounded-xl overflow-x-auto;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.01);
   }
 
   .crm-table {
@@ -272,17 +368,17 @@
   }
 
   .crm-table thead {
-    @apply bg-slate-50 border-b border-slate-200;
+    @apply bg-slate-50/70 border-b border-slate-200;
   }
 
   .crm-table th {
-    @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500;
+    @apply px-5 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-slate-400;
     white-space: nowrap;
   }
 
   .crm-table tbody tr {
-    @apply border-b border-slate-100;
-    transition: background-color 0.1s ease;
+    @apply border-b border-slate-200;
+    transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .crm-table tbody tr:last-child {
@@ -290,36 +386,35 @@
   }
 
   .crm-table tbody tr:hover {
-    background-color: var(--surface-hover);
+    background-color: #FAFAFA;
   }
 
   .crm-table td {
-    @apply px-4 py-3 text-[13px] text-slate-700;
+    @apply px-5 py-4 text-[13px] text-slate-600;
     vertical-align: middle;
   }
 
   .crm-table-empty {
-    @apply text-center py-16 text-slate-400 text-sm;
+    @apply text-center py-20 text-slate-400 text-sm;
   }
 
   /* ═══════════════════════════════════════
-     BADGES & STATUS INDICATORS
-  ═══════════════════════════════════════ */
+     BADGES (Soft light colors)
+     ═══════════════════════════════════════ */
   .crm-badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-tight;
   }
 
   .crm-badge-dot {
     @apply h-1.5 w-1.5 rounded-full shrink-0;
   }
 
-  /* Status presets */
-  .crm-badge-success  { @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700; }
-  .crm-badge-warning  { @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700; }
-  .crm-badge-danger   { @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-700; }
-  .crm-badge-info     { @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700; }
-  .crm-badge-neutral  { @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600; }
-  .crm-badge-purple   { @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700; }
+  .crm-badge-success  { @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100; }
+  .crm-badge-warning  { @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-100; }
+  .crm-badge-danger   { @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-800 border border-red-100; }
+  .crm-badge-info     { @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-100; }
+  .crm-badge-neutral  { @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200; }
+  .crm-badge-purple   { @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-100; }
 
   .crm-dot-success { @apply h-1.5 w-1.5 rounded-full shrink-0 bg-emerald-500; }
   .crm-dot-warning { @apply h-1.5 w-1.5 rounded-full shrink-0 bg-amber-500; }
@@ -328,269 +423,211 @@
   .crm-dot-neutral { @apply h-1.5 w-1.5 rounded-full shrink-0 bg-slate-400; }
 
   /* ═══════════════════════════════════════
-     BUTTONS
-  ═══════════════════════════════════════ */
+     BUTTONS (Apple / Stripe style)
+     ═══════════════════════════════════════ */
   .crm-btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium;
-    transition: all 0.15s ease;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold tracking-tight;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     white-space: nowrap;
     border: 1px solid transparent;
   }
 
+  .crm-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .crm-btn:active {
+    transform: scale(0.96);
+  }
+
   .crm-btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium bg-blue-600 text-white border-blue-600;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold tracking-tight bg-black text-white border-black;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .crm-btn-primary:hover {
-    background-color: #1D4ED8;
-    border-color: #1D4ED8;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    background-color: #111111 !important;
+    border-color: #111111 !important;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12);
   }
 
   .crm-btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium bg-white text-slate-700 border-slate-200;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold tracking-tight bg-white text-slate-700 border-slate-200;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .crm-btn-secondary:hover {
-    background-color: var(--crm-blue-50);
-    border-color: var(--crm-blue-200);
-    color: #1D4ED8;
+    background-color: #FAFAFA;
+    border-color: #D0D0D0;
+    color: #000000;
   }
 
   .crm-btn-ghost {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium text-slate-600;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold tracking-tight text-slate-600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .crm-btn-ghost:hover {
-    background-color: var(--crm-blue-50);
-    color: #1D4ED8;
+    @apply bg-slate-100 text-slate-900;
   }
 
   .crm-btn-danger {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium bg-red-600 text-white border-red-600;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold tracking-tight bg-red-600 text-white border-red-600;
+    box-shadow: 0 1px 2px 0 rgba(197, 34, 31, 0.15);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .crm-btn-danger:hover {
-    background-color: #B91C1C;
+    background-color: #A50E0C;
+    border-color: #A50E0C;
   }
 
   .crm-btn-sm {
-    @apply px-3 py-1.5 text-[12px];
+    @apply px-3 py-1.5 text-[12px] rounded-md;
   }
 
   .crm-btn-icon {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium p-2;
+    @apply p-2 rounded-lg hover:bg-slate-100 transition-colors shrink-0 text-slate-500 hover:text-slate-800;
   }
 
   /* ═══════════════════════════════════════
-     INPUTS & FORM ELEMENTS
-  ═══════════════════════════════════════ */
+     INPUTS & SELECTS
+     ═══════════════════════════════════════ */
   .crm-input {
-    @apply flex items-center gap-2 h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] text-slate-800;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    @apply flex items-center gap-2 h-9 px-3.5 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-800 placeholder-slate-400;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.01);
   }
 
-  .crm-input:focus-within {
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  .crm-input:focus, .crm-input:focus-within {
+    border-color: var(--crm-blue-500);
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.12), inset 0 1px 2px 0 rgba(0, 0, 0, 0.01);
+    outline: none;
   }
 
   .crm-search {
-    @apply flex items-center gap-2 h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] text-slate-800 gap-2;
-    min-width: 220px;
+    @apply flex items-center gap-2 h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-800;
+    min-width: 240px;
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.01);
+  }
+
+  .crm-search input {
+    @apply flex-1 bg-transparent border-none outline-none text-[13px];
   }
 
   .crm-select {
-    @apply flex items-center gap-2 h-9 px-3 bg-white border border-slate-200 rounded-md text-[13px] text-slate-800 pr-8 cursor-pointer;
+    @apply flex items-center gap-2 h-9 px-3.5 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-800 pr-9 cursor-pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 10px center;
+    background-position: right 12px center;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.01);
   }
 
-  /* ═══════════════════════════════════════
-     SECTION HEADERS
-  ═══════════════════════════════════════ */
-  .crm-section-label {
-    @apply text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2;
-  }
-
-  /* ═══════════════════════════════════════
-     PROGRESS BARS
-  ═══════════════════════════════════════ */
-  .crm-progress-track {
-    @apply h-1.5 rounded-full bg-slate-100 overflow-hidden;
-  }
-
-  .crm-progress-fill {
-    @apply h-full rounded-full transition-all duration-500;
-    background: linear-gradient(90deg, #3B82F6, #2563EB);
-  }
-
-  .crm-progress-fill-success {
-    background: linear-gradient(90deg, #10B981, #059669);
-  }
-
-  .crm-progress-fill-warning {
-    background: linear-gradient(90deg, #F59E0B, #D97706);
-  }
-
-  .crm-progress-fill-danger {
-    background: linear-gradient(90deg, #F87171, #DC2626);
-  }
-
-  /* ═══════════════════════════════════════
-     SIDEBAR NAV
-  ═══════════════════════════════════════ */
-  .sidebar-nav-item {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium text-slate-600;
-    transition: all 0.12s ease;
-    position: relative;
-  }
-
-  .sidebar-nav-item:hover {
-    background-color: var(--crm-blue-50);
-    color: #1D4ED8;
-  }
-
-  .sidebar-nav-item.active {
-    background-color: var(--crm-blue-50);
-    color: #1D4ED8;
-    font-weight: 600;
-  }
-
-  .sidebar-nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 4px;
-    bottom: 4px;
-    width: 3px;
-    background: #2563EB;
-    border-radius: 0 2px 2px 0;
+  .crm-select:focus {
+    border-color: var(--crm-blue-500);
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.12);
+    outline: none;
   }
 
   /* ═══════════════════════════════════════
      TABS
-  ═══════════════════════════════════════ */
+     ═══════════════════════════════════════ */
   .crm-tabs {
-    @apply flex border-b border-slate-200 bg-white px-6;
+    @apply flex border-b border-slate-200 bg-white px-8 gap-3 py-3;
   }
 
   .crm-tab {
-    @apply px-4 py-3 text-[13px] font-medium text-slate-500 border-b-2 border-transparent -mb-px;
-    transition: all 0.12s ease;
+    @apply px-4 py-2 text-[13px] font-semibold text-slate-500 rounded-lg border-b-0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     white-space: nowrap;
   }
 
   .crm-tab:hover {
-    color: #2563EB;
-    border-bottom-color: #BFDBFE;
+    color: var(--crm-blue-600);
+    background-color: #FAFAFA;
   }
 
   .crm-tab.active {
-    color: #2563EB;
-    border-bottom-color: #2563EB;
-    font-weight: 600;
+    color: #FFFFFF !important;
+    background-color: #000000 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
   /* ═══════════════════════════════════════
      ALERT BANNERS
-  ═══════════════════════════════════════ */
-  .crm-alert-info    { @apply flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-[13px]; }
-  .crm-alert-success { @apply flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-[13px]; }
-  .crm-alert-warning { @apply flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-[13px]; }
-  .crm-alert-danger  { @apply flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-[13px]; }
+     ═══════════════════════════════════════ */
+  .crm-alert-info    { @apply flex items-start gap-3 p-4 bg-blue-50/50 border border-blue-100 rounded-xl text-blue-900 text-[13px]; }
+  .crm-alert-success { @apply flex items-start gap-3 p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl text-emerald-900 text-[13px]; }
+  .crm-alert-warning { @apply flex items-start gap-3 p-4 bg-amber-50/50 border border-amber-100 rounded-xl text-amber-900 text-[13px]; }
+  .crm-alert-danger  { @apply flex items-start gap-3 p-4 bg-red-50/50 border border-red-100 rounded-xl text-red-900 text-[13px]; }
 
   /* ═══════════════════════════════════════
-     DIVIDERS
-  ═══════════════════════════════════════ */
-  .crm-divider {
-    @apply border-t border-slate-100 my-4;
+     SIDEBAR NAV
+     ═══════════════════════════════════════ */
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium text-slate-500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .sidebar-nav-item:hover {
+    background-color: #FAFAFA;
+    color: var(--crm-blue-600);
+  }
+
+  .sidebar-nav-item.active {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    font-weight: 750 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
 
   /* ═══════════════════════════════════════
      HEALTH SCORE RING
-  ═══════════════════════════════════════ */
+     ═══════════════════════════════════════ */
   .crm-health-ring {
     @apply relative flex items-center justify-center;
   }
 
   /* ═══════════════════════════════════════
-     SKELETON LOADING
-  ═══════════════════════════════════════ */
-  .crm-skeleton {
-    @apply bg-slate-200 rounded animate-pulse;
-  }
-
-  /* ═══════════════════════════════════════
-     EMPTY STATE
-  ═══════════════════════════════════════ */
+     EMPTY STATES
+     ═══════════════════════════════════════ */
   .crm-empty {
-    @apply flex flex-col items-center justify-center py-16 text-center;
+    @apply flex flex-col items-center justify-center py-20 text-center bg-white border border-slate-200 rounded-xl;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.01);
   }
 
   .crm-empty-icon {
-    @apply h-12 w-12 text-slate-300 mb-4;
+    @apply h-12 w-12 text-slate-400 mb-4;
   }
 
   .crm-empty-title {
-    @apply text-[14px] font-semibold text-slate-600 mb-1;
+    @apply text-[14px] font-bold text-slate-700 mb-1;
   }
 
   .crm-empty-desc {
-    @apply text-[12px] text-slate-400;
+    @apply text-[12px] text-slate-500;
   }
 
   /* ═══════════════════════════════════════
-     INTERACTIVE HOVER GLOW (blue tint)
-  ═══════════════════════════════════════ */
+     INTERACTIVE HOVER GLOW
+     ═══════════════════════════════════════ */
   .crm-hover-glow {
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
   }
 
   .crm-hover-glow:hover {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 2px 8px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.08), 0 4px 12px rgba(0, 112, 243, 0.02);
     border-color: var(--crm-blue-200) !important;
   }
 
-  /* ═══════════════════════════════════════
-     AVATAR
-  ═══════════════════════════════════════ */
-  .crm-avatar {
-    @apply rounded-full flex items-center justify-center font-semibold text-white shrink-0;
-    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-  }
-
-  /* ═══════════════════════════════════════
-     TOOLTIPS & POPOVERS
-  ═══════════════════════════════════════ */
-  .crm-tooltip {
-    @apply absolute z-50 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] rounded-md shadow-lg whitespace-nowrap;
-    pointer-events: none;
-  }
-
-  /* ═══════════════════════════════════════
-     SHIMMER ANIMATION
-  ═══════════════════════════════════════ */
-  @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  .crm-shimmer {
-    background: linear-gradient(90deg, #f0f4ff 25%, #e2e8f0 50%, #f0f4ff 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  /* ═══════════════════════════════════════
-     BLUE TINT INTERACTIVE ELEMENTS
-  ═══════════════════════════════════════ */
   .crm-interactive {
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .crm-interactive:hover {
@@ -598,27 +635,115 @@
     border-color: var(--crm-blue-200);
   }
 
-  /* Active / selected row */
   .crm-row-selected {
     background-color: var(--crm-blue-50) !important;
-    border-left: 3px solid #2563EB;
+    border-left: 3px solid var(--crm-blue-600);
   }
 
-  /* Blue gradient header strip */
   .crm-blue-strip {
-    background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%);
+    background: linear-gradient(135deg, var(--crm-blue-700) 0%, var(--crm-blue-600) 50%, var(--crm-blue-500) 100%);
   }
 
-  /* Subtle page section */
+  /* Subtle page section layout wrapper */
   .crm-section {
-    @apply bg-white border border-slate-200 rounded-lg overflow-hidden mb-5;
+    @apply bg-white border border-slate-200 rounded-xl overflow-hidden mb-6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.01);
   }
 
   .crm-section-head {
-    @apply flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50/60;
+    @apply flex items-center justify-between px-6 py-4.5 border-b border-slate-200 bg-slate-50/20;
   }
 
   .crm-section-body {
-    @apply p-5;
+    @apply p-6;
+  }
+
+  /* ═══════════════════════════════════════
+     ULTRA-PREMIUM SHADCN & COMPONENT OVERRIDES
+     Interactive Cards, Click Scaling, and Modern Hover Glows
+     ═══════════════════════════════════════ */
+
+  /* ShadCN Card Override */
+  [data-slot=card] {
+    background: #FFFFFF !important;
+    border: 1px solid #EAEAEA !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+    --ring: transparent !important;
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.22s ease !important;
+  }
+
+  [data-slot=card]:hover {
+    border-color: #000000 !important;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  /* Universal Click Micro-interaction for buttons */
+  button, [data-slot=button], .crm-btn, .sidebar-nav-item, .crm-tab {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  button:hover, [data-slot=button]:hover, .crm-btn:hover {
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  button:active, [data-slot=button]:active, .crm-btn:active, .sidebar-nav-item:active, .crm-tab:active {
+    transform: scale(0.95) !important;
+  }
+
+  /* Interactive list item hover (e.g. alerts feed, notes feed) */
+  .divide-y > div:hover, .divide-y > button:hover {
+    background-color: #FAFAFA !important;
+    transform: translateX(2px) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  /* Sidebar item hover animation */
+  .sidebar-nav-item:hover svg {
+    transform: translateX(1.5px) !important;
+  }
+
+  /* KPI grid animation on load */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .crm-stat-card, [data-slot=card] {
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Live Pulsing Critical Alert Dot */
+  .crm-pulse-dot-red {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #EF4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: crm-pulse-red-key 1.5s infinite;
+  }
+
+  @keyframes crm-pulse-red-key {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
   }
 }

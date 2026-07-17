@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full" style={{ background: "#F0F4FF" }}>
-      <body className={`${inter.className} h-full overflow-hidden flex`} style={{ background: "#F0F4FF" }}>
+    <html lang="en" className="h-full">
+      <body className={`${inter.className} h-full overflow-hidden flex`}>
         <LayoutWrapper>{children}</LayoutWrapper>
         <Toaster />
       </body>

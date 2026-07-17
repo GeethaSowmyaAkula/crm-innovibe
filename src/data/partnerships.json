@@ -1,0 +1,105 @@
+[
+  {
+    "id": "p1",
+    "companyName": "Mahindra Electric",
+    "contactPerson": "Ramesh Kumar",
+    "emailId": "ramesh.k@mahindra.com",
+    "address": "Electronic City, Bangalore, Karnataka",
+    "category": "EV OEM",
+    "lastInteractionDate": "2026-07-10",
+    "currentStatus": "Negotiation",
+    "nextFollowUpDate": "2026-07-20",
+    "nextAction": "Finalize SLA for battery supply partnership",
+    "expectedOutcome": "Long term battery pack procurement at 12% discount",
+    "history": [
+      {
+        "date": "2026-07-10",
+        "note": "Status updated to Negotiation. Reviewed draft SLA."
+      },
+      {
+        "date": "2026-07-05",
+        "note": "Initial call done. Share technical requirements sheet."
+      }
+    ]
+  },
+  {
+    "id": "p2",
+    "companyName": "BluSmart Mobility",
+    "contactPerson": "Aniket Shah",
+    "emailId": "aniket@blusmart.in",
+    "address": "Gurugram, Haryana",
+    "category": "EV Fleet",
+    "lastInteractionDate": "2026-07-15",
+    "currentStatus": "Partnership Confirmed",
+    "nextFollowUpDate": "2026-07-25",
+    "nextAction": "Onboard first batch of 50 drivers on InnoVibe platform",
+    "expectedOutcome": "Increase booking volume by 35% in Delhi NCR",
+    "history": [
+      {
+        "date": "2026-07-15",
+        "note": "Partnership confirmed and agreement signed."
+      },
+      {
+        "date": "2026-07-10",
+        "note": "Agreement finalized. Final sign-off scheduled."
+      }
+    ]
+  },
+  {
+    "id": "p3",
+    "companyName": "GoMechanic EV",
+    "contactPerson": "Vikram Malhotra",
+    "emailId": "vikram@gomechanic.in",
+    "address": "Pune, Maharashtra",
+    "category": "EV Garage",
+    "lastInteractionDate": "2026-07-02",
+    "currentStatus": "Discussion Ongoing",
+    "nextFollowUpDate": "2026-07-16",
+    "nextAction": "Conduct audit of their service bays for EV compatibility",
+    "expectedOutcome": "Standardize service SLA for out-of-warranty repairs",
+    "history": [
+      {
+        "date": "2026-07-02",
+        "note": "Discussion ongoing. Shared initial pricing structure."
+      }
+    ]
+  },
+  {
+    "id": "p4",
+    "companyName": "Sequoia India",
+    "contactPerson": "Sandip Singh",
+    "emailId": "sandip@sequoia.com",
+    "address": "Bandra Kurla Complex, Mumbai",
+    "category": "EV Funding",
+    "lastInteractionDate": "2026-06-25",
+    "currentStatus": "Closed Won",
+    "nextFollowUpDate": "2026-08-01",
+    "nextAction": "Submit Q2 operational telemetry report",
+    "expectedOutcome": "Unlock Series B funding second tranche of $4.5M",
+    "history": [
+      {
+        "date": "2026-06-25",
+        "note": "Investment round closed won. Term sheet completed."
+      }
+    ]
+  },
+  {
+    "id": "p5",
+    "companyName": "Ola Experience Centre",
+    "contactPerson": "Pooja Reddy",
+    "emailId": "pooja.r@olacabs.com",
+    "address": "Koramangala, Bangalore",
+    "category": "EV Dealership",
+    "lastInteractionDate": "2026-07-16",
+    "currentStatus": "New",
+    "nextFollowUpDate": "2026-07-18",
+    "nextAction": "Send partnership intro deck and proposal",
+    "expectedOutcome": "Set up joint referral booths at Ola experience zones",
+    "history": [
+      {
+        "date": "2026-07-16",
+        "note": "Inbound interest received. Contact person identified."
+      }
+    ]
+  }
+]

@@ -5,13 +5,14 @@ import {
   LayoutDashboard, Sparkles, Database, FileText, 
   History, ShieldAlert, CheckCircle2, TrendingUp, IndianRupee, 
   HelpCircle, Clock, AlertTriangle, ArrowUpRight, Zap, Loader2, RefreshCw,
-  Users, GitBranch, LineChart, Target, Network
+  Users, GitBranch, LineChart, Target, Network, Briefcase
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { ContextEngine } from "@/lib/context-engine";
+import { PartnershipTracker } from "./partnership-tracker";
 
 interface CockpitTabsProps {
   overviewTab: React.ReactNode;
@@ -56,7 +57,7 @@ export function CockpitTabs({
   relationshipInsights,
   outcomes
 }: CockpitTabsProps) {
-  const [activeTab, setActiveTab] = useState<"overview" | "strategy" | "relationship" | "memory" | "reports" | "outcomes" | "techdebt">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "strategy" | "relationship" | "memory" | "reports" | "outcomes" | "techdebt" | "partnerships">("overview");
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   async function triggerOpportunityScan() {
