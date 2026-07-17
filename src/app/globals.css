@@ -326,9 +326,9 @@
   }
 
   .crm-stat-card:hover {
-    border-color: #0070F3 !important;
+    border-color: #000000 !important;
     transform: translateY(-3px) scale(1.015);
-    box-shadow: 0 12px 24px -4px rgba(0, 112, 243, 0.08), 0 0 0 1px rgba(0, 112, 243, 0.05);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px #000000 !important;
   }
 
   .crm-stat-icon {
@@ -677,8 +677,9 @@
 
   [data-slot=card]:hover {
     border-color: #000000 !important;
-    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
-    transform: translateY(-2px) !important;
+    --tw-ring-color: #000000 !important;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 0 0 1px #000000 !important;
+    transform: translateY(-2.5px) !important;
   }
 
   /* Universal Click Micro-interaction for buttons */
@@ -747,5 +748,31 @@
       transform: scale(0.95);
       box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
+  }
+
+  /* Universal ShadCN TableRow Slide & Left Accent Hover */
+  [data-slot=table-row] {
+    transition: background-color 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease !important;
+  }
+
+  [data-slot=table-row]:hover {
+    background-color: #FAFAFA !important;
+    transform: scale(1.002) translateX(3px) !important;
+    box-shadow: inset 3px 0 0 0 #0070F3, 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+  }
+
+  /* Nested Interactive Elements / Slate-50 boxes / Diagnostic cards get a blue highlight */
+  [data-slot=card] div[class*="bg-slate-50"],
+  [data-slot=card] div[class*="bg-slate-100"],
+  [data-slot=card] div[class*="border"] {
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease !important;
+  }
+
+  [data-slot=card] div[class*="bg-slate-50"]:hover,
+  [data-slot=card] div[class*="bg-slate-100"]:hover,
+  [data-slot=card] div[class*="border"]:hover {
+    border-color: #0070F3 !important;
+    box-shadow: 0 0 0 1px #0070F3, 0 4px 12px rgba(0, 112, 243, 0.04) !important;
+    background-color: rgba(0, 112, 243, 0.01) !important;
   }
 }
