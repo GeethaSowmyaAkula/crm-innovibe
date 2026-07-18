@@ -119,7 +119,7 @@ export function Sidebar() {
           {!activeCollapse && (
             <div className="animate-fade-in min-w-0">
               <p className="text-sm font-black text-slate-900 tracking-tight leading-none">ICC</p>
-              <p className="text-[10px] text-blue-600 font-extrabold uppercase tracking-widest mt-1">Integrated Command Center</p>
+              <p className="text-[10px] text-blue-600 font-extrabold uppercase tracking-widest mt-1">Innovibe Command Center</p>
             </div>
           )}
         </div>

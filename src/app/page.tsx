@@ -176,26 +176,26 @@ export default async function CEOCockpitPage() {
       {/* SECTION 1: COMPANY HEALTH & STATS */}
       <div className="grid gap-6 md:grid-cols-4">
         {/* Overall Score Card */}
-        <Card className="md:col-span-1 border border-slate-200/80 shadow-md relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white rounded-2xl">
-          <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-blue-500/20 blur-xl animate-pulse" />
+        <Card className="md:col-span-1 border border-slate-200/80 shadow-md relative overflow-hidden bg-white text-slate-900 rounded-2xl">
+          <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-blue-500/10 blur-xl animate-pulse" />
           <CardHeader className="pb-1 pt-6 px-6">
             <CardTitle className="text-slate-400 text-[10px] font-extrabold tracking-wider uppercase">Company Health Index</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center py-6">
             <div className="relative flex items-center justify-center">
               <svg className="w-28 h-28 transform -rotate-90">
-                <circle cx="56" cy="56" r="46" stroke="#1e293b" strokeWidth="8" fill="transparent" />
+                <circle cx="56" cy="56" r="46" stroke="#F1F5F9" strokeWidth="8" fill="transparent" />
                 <circle cx="56" cy="56" r="46" stroke="#2563EB" strokeWidth="8" fill="transparent"
                   strokeDasharray={2 * Math.PI * 46}
                   strokeDashoffset={2 * Math.PI * 46 * (1 - healthReport.overall / 100)} 
                   strokeLinecap="round"
                   className="transition-all duration-1000 ease-out"
-                  style={{ filter: "drop-shadow(0 0 6px rgba(37, 99, 235, 0.6))" }}
+                  style={{ filter: "drop-shadow(0 0 6px rgba(37, 99, 235, 0.3))" }}
                 />
               </svg>
-              <div className="absolute text-3xl font-extrabold font-heading tracking-tight">{healthReport.overall}%</div>
+              <div className="absolute text-3xl font-black font-heading tracking-tight text-slate-900">{healthReport.overall}%</div>
             </div>
-            <p className="text-[11px] text-slate-300 mt-4 text-center px-4 leading-normal">Operational telemetry synthesized dynamically from 6 corporate metrics.</p>
+            <p className="text-[11px] text-slate-500 mt-4 text-center px-4 leading-normal">Operational telemetry synthesized dynamically from 6 corporate metrics.</p>
           </CardContent>
         </Card>
 
