@@ -378,13 +378,6 @@ export default function AICeoDashboard() {
         </div>
         <div className="flex gap-2 z-10 shrink-0">
           <Button
-            onClick={() => setChatOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-9 px-4 rounded-md shadow-sm transition-colors"
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Chat with Copilot
-          </Button>
-          <Button
             onClick={() => loadCEODashboardData(true)}
             disabled={refreshing}
             variant="outline"

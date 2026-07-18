@@ -21,6 +21,7 @@ const sections = [
       { name: "WhatsApp", href: "https://evdiagnostic.innovibemobility.com/dashboard/?tab=users", icon: MessageSquare },
       { name: "ERP", href: "/erp", icon: Database },
       { name: "Leads", href: "https://google-maps-lead-gen-production-e3d6.up.railway.app", icon: UserPlus },
+      { name: "AI Assistant", href: "/chatbot", icon: Bot },
     ],
   },
   {
@@ -67,7 +68,6 @@ const sections = [
       { name: "Strategy Center", href: "/strategy", icon: Target },
       { name: "Reports", href: "/sales", icon: FileText },
       { name: "Reminders", href: "/reminders", icon: BellRing },
-      { name: "AI Assistant", href: "/chatbot", icon: Bot },
       { name: "Settings", href: "/settings", icon: Settings },
     ],
   },
