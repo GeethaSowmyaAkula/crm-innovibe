@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Car, ShieldCheck, Megaphone,
   Settings, CreditCard, BarChart3, TrendingUp, UserCog,
   MapPin, Cpu, ShieldAlert, FileText, Target, BookOpen,
-  Zap, Users, MessageSquare, BellRing, ChevronRight, ChevronLeft, Building, Database, UserPlus, Handshake
+  Zap, Users, MessageSquare, BellRing, ChevronRight, ChevronLeft, Building, Database, UserPlus, Handshake, Bot
 } from "lucide-react";
 
 const sections = [
@@ -67,6 +67,7 @@ const sections = [
       { name: "Strategy Center", href: "/strategy", icon: Target },
       { name: "Reports", href: "/sales", icon: FileText },
       { name: "Reminders", href: "/reminders", icon: BellRing },
+      { name: "AI Assistant", href: "/chatbot", icon: Bot },
       { name: "Settings", href: "/settings", icon: Settings },
     ],
   },
