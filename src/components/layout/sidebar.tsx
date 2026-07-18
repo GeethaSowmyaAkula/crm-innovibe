@@ -51,7 +51,6 @@ const sections = [
     items: [
       { name: "AMC Contracts", href: "/amc", icon: ShieldCheck },
       { name: "Payments", href: "/transactions", icon: CreditCard },
-      { name: "Revenue Health", href: "/sales", icon: BarChart3 },
     ],
   },
   {
@@ -68,7 +67,6 @@ const sections = [
       { name: "Strategy Center", href: "/strategy", icon: Target },
       { name: "Reports", href: "/sales", icon: FileText },
       { name: "Reminders", href: "/reminders", icon: BellRing },
-      { name: "Knowledge Base", href: "/knowledge", icon: BookOpen },
       { name: "Settings", href: "/settings", icon: Settings },
     ],
   },
