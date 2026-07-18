@@ -382,105 +382,6 @@ export default async function CEOCockpitPage() {
         </Card>
       </div>
 
-      {/* LOWER-GRID: TIMELINE, TASK CENTER, QUICK ACTIONS */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* SECTION 4: REAL-TIME COMPANY TIMELINE */}
-        <Card className="border border-slate-200/80 shadow-md md:col-span-1 rounded-2xl">
-          <CardHeader className="pb-3 pt-5 px-6 border-b border-slate-100 bg-slate-50/30">
-            <CardTitle className="text-slate-900 text-sm font-bold flex items-center gap-2 font-heading">
-              <Clock className="h-4.5 w-4.5 text-blue-500 animate-spin-slow" />
-              Real-Time Timeline
-            </CardTitle>
-            <CardDescription className="text-slate-500 text-xs mt-0.5">Live operational events ledger.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="relative border-l border-slate-100 pl-4 space-y-5 ml-1.5 h-[190px] overflow-y-auto">
-              {timeline.length === 0 ? (
-                <p className="text-center text-slate-400 py-12 text-xs">No recent events logged.</p>
-              ) : (
-                timeline.map((feed: any, index: number) => (
-                  <div key={feed.id || index} className="relative group/time">
-                    <div className="absolute -left-[21.5px] top-1.5 h-2.5 w-2.5 rounded-full border border-white bg-blue-600 shadow-sm transition-transform duration-200 group-hover/time:scale-125" />
-                    <p className="text-[12px] text-slate-700 leading-normal font-medium">{feed.description}</p>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* SECTION 7: TASKS & APPROVALS */}
-        <Card className="border border-slate-200/80 shadow-md md:col-span-1 rounded-2xl">
-          <CardHeader className="pb-3 pt-5 px-6 border-b border-slate-100 bg-slate-50/30">
-            <CardTitle className="text-slate-900 text-sm font-bold flex items-center gap-2 font-heading">
-              <CheckSquare className="h-4.5 w-4.5 text-emerald-500" />
-              Approvals &amp; Tasks
-            </CardTitle>
-            <CardDescription className="text-slate-500 text-xs mt-0.5">Actionable board cards needing signoff.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 flex flex-col justify-between h-[230px]">
-            <div className="space-y-3 flex-1 overflow-y-auto pr-1">
-              {tasks.length === 0 ? (
-                <p className="text-center text-slate-400 py-12 text-xs">No outstanding approvals.</p>
-              ) : (
-                tasks.map((task: any) => (
-                  <div 
-                    key={task.id} 
-                    className="p-3 border border-slate-150/60 rounded-xl bg-white hover:bg-slate-50/50 hover:shadow-sm transition-all duration-200 flex justify-between items-center gap-3 border-l-4 border-l-slate-300"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-[12px] font-bold text-slate-800 truncate">{task.title}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5 truncate">{task.description}</p>
-                    </div>
-                    <Badge variant="outline" className="text-[9px] uppercase tracking-wider font-extrabold border-slate-200 px-2 shrink-0 bg-slate-50 text-slate-600">
-                      {task.status.replace("_", " ")}
-                    </Badge>
-                  </div>
-                ))
-              )}
-            </div>
-            <Link 
-              href="/settings"
-              className="text-[11px] text-blue-600 hover:text-blue-700 font-bold flex items-center justify-center py-2.5 hover:underline gap-1 mt-3 border-t border-dashed border-slate-250/70"
-            >
-              Open Settings Center
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
-          </CardContent>
-        </Card>
-
-        {/* SECTION 5: QUICK ACTION CENTER */}
-        <Card className="border border-slate-200/80 shadow-md md:col-span-1 rounded-2xl">
-          <CardHeader className="pb-3 pt-5 px-6 border-b border-slate-100 bg-slate-50/30">
-            <CardTitle className="text-slate-900 text-sm font-bold flex items-center gap-2 font-heading">
-              <Zap className="h-4.5 w-4.5 text-blue-600 animate-pulse" />
-              Quick Action Terminal
-            </CardTitle>
-            <CardDescription className="text-slate-500 text-xs mt-0.5">Dynamic hotlinks to dashboard control endpoints.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-3 p-6">
-            {[
-              { name: "Create Goal", href: "/goals", icon: Award },
-              { name: "Create AMC Plan", href: "/amc", icon: ShieldCheck },
-              { name: "Launch Campaign", href: "/announcements", icon: TrendingUp },
-              { name: "Generate Report", href: "/sales", icon: FileText },
-              { name: "Create Automation", href: "/reminders", icon: Zap },
-              { name: "Review Tasks", href: "/settings", icon: CheckSquare },
-              { name: "Add Fleet Client", href: "/fleet", icon: Users },
-              { name: "Add Technician", href: "/technicians", icon: Plus }
-            ].map((btn, i) => (
-              <Link 
-                key={i} 
-                href={btn.href}
-                className="p-3 border border-slate-150/60 bg-white hover:bg-slate-50 rounded-xl flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 hover:shadow-md transition-all duration-200 group/act"
-              >
-                <btn.icon className="h-4.5 w-4.5 text-slate-400 group-hover/act:text-blue-650 transition-colors" />
-                <span className="text-[10px] font-bold text-slate-700 tracking-tight leading-none">{btn.name}</span>
-              </Link>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 
@@ -490,7 +391,7 @@ export default async function CEOCockpitPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight font-heading leading-tight flex items-center gap-2">
-            CEO Cockpit
+            CEO
           </h1>
           <p className="text-slate-500 text-sm mt-1 leading-normal">Dynamic corporate diagnostics, alerts queue, and recommendation matrices for InnoVibe Mobility.</p>
         </div>
